@@ -42,7 +42,7 @@ if [ ! -f "$cookies" ]; then
   read -r -s password
   password=$(jq -rR '@uri' <<< "$password")
   printf '\n'
-  curl 'https://ncore.cc/login.php' -c "$cookies" -s --data-raw "submitted=1&nev=$username&pass=$password&ne_leptessen_ki=1"
+  sudo curl 'https://ncore.cc/login.php' -c "$cookies" -s --data-raw "submitted=1&nev=$username&pass=$password&ne_leptessen_ki=1"
   eval printf %.0s─ '{1..'"${COLUMNS:-$(tput cols)}"\}; echo
 fi
 
