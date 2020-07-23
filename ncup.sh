@@ -43,15 +43,18 @@ fi
 # Searching for cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
 # If login fails exit.
-if [ ! -f "$cookies" ]; then
+if [[ ! -f "$cookies" ]]; then
   printf '\e[91m%s\e[0m\n' "cookies.txt not found, login: "
   read -r -p 'username: ' username
   read -r -s -p 'password: ' password
   printf '\n'
+  mkdir -p "$(dirname "$cookies")"
   curl 'https://ncore.cc/login.php' -c "$cookies" -s -d "submitted=1" --data-urlencode "nev=$username" --data-urlencode "pass=$password" -d "ne_leptessen_ki=1"
-  if grep -q deleted "$cookie_file" 2>/dev/null; then
+  if [[ $(curl -s -I -b "$cookies_file" 'https://ncore.cc/' -o /dev/null -w '%{http_code}') == 200 ]]; then
+    printf '\e[92m%s\e[0m\n' "Cookies OK."
+  else
     printf '\e[91m%s\e[0m\n' "ERROR: login failed." >&2
-    rm "$ookies"
+    rm -f "$cookies"
     exit 1
   fi
   print_separator
