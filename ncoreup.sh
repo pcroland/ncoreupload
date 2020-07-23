@@ -35,6 +35,10 @@ print_separator() {
 
 cookies=~/.ncoreupload/cookies.txt
 config=~/.ncoreupload/ncoreupload.conf
+if [[ -f "$config" ]]; then
+  printf 'Creating config file in: \e[93m%s\e[0m\n' "$config"
+  curl https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncoreupload.conf -o "$config" -s
+fi
 
 # Searching for ncore_cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
@@ -239,7 +243,7 @@ for x in "$@"; do
   printf 'IMDB.......: \e[93mhttps://www.imdb.com/title/%s\e[0m\n' "$imdb"
   printf 'link.......: \e[93m%s\e[0m\n' "$movie_database"
   printf 'Uploading..: \e[93m%s\e[0m\n' "$type"
-  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncorea.cc/upload.php" \
+  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upload.php" \
   -b "$cookies" \
   -F getUnique="$unique_id" \
   -F eredeti=igen \
