@@ -21,13 +21,13 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 
 ## Telepítés
 ```sh
-install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncoreup && hash -r
+install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup && hash -r
 ```
 Ha `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fájlunkba hogy: `PATH="$HOME/.local/bin:$PATH"`.
 
 ## Használat
 ```sh
-ncoreupload [input(s)]
+ncup [input(s)]
 ```
 
 ## Példák
@@ -36,7 +36,7 @@ ncoreupload A.Dogs.Journey.2019.BDRip.x264.HuN-prldm
 ```
 (egy konkrét mappa feltöltése)
 ```sh
-ncoreupload A.Dogs.Journey*prldm
+ncup A.Dogs.Journey*prldm
 ```
 (összes mappa feltöltése, aminek az eleje `A.Dogs.Journey` és a vége `prldm`)
 
