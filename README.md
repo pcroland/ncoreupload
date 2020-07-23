@@ -1,5 +1,7 @@
 # ncup
-## Feltöltő script nCore-ra eredeti release-ekhez film és sorozat kategóriában.
+###Feltöltő script nCore-ra eredeti release-ekhez film és sorozat kategóriában.
+
+## Leírás
 * A script automatikusan készít torrentet a megadott inputokhoz, ha még nincs.
 * A feltöltési kategóriát mappanévből állapítja meg.
 * Az IMDb id-t először NFO fájlban keresi, ha itt nem találja, mappanév alapján keresi ki IMDb-ről.
