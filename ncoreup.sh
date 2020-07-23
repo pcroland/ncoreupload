@@ -107,6 +107,8 @@ fi
 # it will get "$imdb" and "$$movie_database" from the NFO file or scrape the sites,
 # "$hun_title" "$release_date" and other infobar values will be parsed from the site.
 for x in "$@"; do
+  printf '\e[92m%s\e[0m\n' "$torrent_name"
+
   seasons=
   episodes=
 
@@ -118,8 +120,11 @@ for x in "$@"; do
   torrent_name=$(basename "$x")
   torrent_file=$torrent_name.torrent
   nfo_files=("$x"/*.nfo)
+  if (( ${#nfo_files[@]} > 1 )); then
+    echo 'ERROR: multiple NFO files found' >&2
+    exit 1
+  fi
   nfo_file=${nfo_files[0]}
-  printf '\e[92m%s\e[0m\n' "$torrent_name"
 
   # Defining torrent category.
   if grep -qEi "\.hun(\.|\-)" <<< "$torrent_name"; then
