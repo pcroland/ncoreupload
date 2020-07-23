@@ -26,6 +26,7 @@ install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreu
 curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o ~/.ncup/ncup.conf -s
 ```
 * Ha a `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fájlunkba hogy: `PATH="$HOME/.local/bin:$PATH"`.
+* Az`~/.ncup/ncup.conf` fájlban beállítjuk a beállításokat
 
 ## Frissítés
 ```sh
