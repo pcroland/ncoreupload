@@ -11,6 +11,7 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 * ffmpeg
 * ffprobe
 * mktor/mktorrent (script tetején állítható)
+* curl
 * jq
 ## Telepítés
 ```sh
