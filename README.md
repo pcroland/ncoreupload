@@ -7,10 +7,23 @@
 * Az első videófájlból generál mintaképeket.
 * infobar.txt-ben manuálisan is meg lehet adni az infobar értékeket.
 
-## Installation
+## Telepítés
 ```sh
 sudo curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncoreup.sh -o /usr/local/bin/ncoreup && sudo chmod +x /usr/local/bin/ncoreup && rehash
 ```
+## Használat
+```sh
+ncoreupload [input(s))
+```
+Példák
+```sh
+ncoreupload A.Dogs.Journey.2019.BDRip.x264.HuN-prldm
+```
+(egy konkrét mappa feltöltése)
+```sh
+ncoreupload A.Dogs.Journey*prldm
+```
+(összes mappa feltöltése, aminek az eleje `A.Dogs.Journey` és a vége `prldm`)
 
 ## Működés közben
 ![image1](https://i.kek.sh/ZvFWJUOhAU8.gif)
