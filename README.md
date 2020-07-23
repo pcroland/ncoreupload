@@ -29,15 +29,11 @@ Ha `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fá
 ```sh
 ncup [input(s)]
 ```
-
-## Példák
-```sh
-ncoreupload A.Dogs.Journey.2019.BDRip.x264.HuN-prldm
-```
+Példák
+`ncup A.Dogs.Journey.2019.BDRip.x264.HuN-prldm`
 (egy konkrét mappa feltöltése)
-```sh
-ncup A.Dogs.Journey*prldm
-```
+
+`ncup A.Dogs.Journey*prldm`
 (összes mappa feltöltése, aminek az eleje `A.Dogs.Journey` és a vége `prldm`)
 
 ## Működés közben
