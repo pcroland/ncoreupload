@@ -33,16 +33,6 @@ print_separator() {
   printf '%.0s─' $(seq 1 "$COLUMNS")
 }
 
-# Anonymous upload config.
-if [[ ${anonymous_upload:?} == true ]]; then
-  anonymous='igen'
-elif [[ $anonymous_upload == false ]]; then
-  anonymous='nem'
-else
-  printf '\e[91m%s\e[0m\n' "Unsupported anonymous value."
-  exit 1
-fi
-
 # Searching for ncore_cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
 script_path=$(dirname "$(realpath -s "$0")")
@@ -63,6 +53,16 @@ source "$script_path"/ncoreupload.conf
 [[ -z "$generate_images" ]] && generate_images='true'
 [[ -z "$print_infobar" ]] && print_infobar='false'
 [[ -z "$anonymous_upload" ]] && anonymous_upload='false'
+
+# Anonymous upload config.
+if [[ ${anonymous_upload:?} == true ]]; then
+  anonymous='igen'
+elif [[ $anonymous_upload == false ]]; then
+  anonymous='nem'
+else
+  printf '\e[91m%s\e[0m\n' "Unsupported anonymous value."
+  exit 1
+fi
 
 # Grabbing the getUnique id.
 printf "Grabbing getUnique id: "
@@ -217,7 +217,7 @@ for x in "$@"; do
   printf 'IMDB.......: \e[93mhttps://www.imdb.com/title/%s\e[0m\n' "$imdb"
   printf 'link.......: \e[93m%s\e[0m\n' "$movie_database"
   printf 'Uploading..: \e[93m%s\e[0m\n' "$type"
-  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upload.php" \
+  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncorea.cc/upload.php" \
   -b "$cookies" \
   -F getUnique="$unique_id" \
   -F eredeti=igen \
