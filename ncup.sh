@@ -191,7 +191,7 @@ for x in "$@"; do
     else
       search_name_folder=$(sed -E 's/(.[0-9]{4}).*/\1/' <<< "$torrent_name" | tr '.' '+')
     fi
-    prefix=${search_name:0:1}
+    prefix=${search_name_folder:0:1}
     prefix=${prefix,,}
     imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/${prefix}/${search_name_folder}.json" | jq -r 'if .d then .d[0].id else empty end')
     #imdb=$(curl "https://www.imdb.com/find?q=$search_name_folder" -s | grep -Po "(tt[[:digit:]]*)(?=\/)" | head -1)
@@ -253,19 +253,19 @@ for x in "$@"; do
     if [[ "$movie_database" == *port.hu* ]]; then
       port_description=$(curl -s "$movie_database" | grep og:description | sed -r 's,>$, />,' | xmlstarlet sel -t -v '//meta/@content')
     else
-      [[ -z "$search_name_imdb" ]] && search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
+      search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
       printf 'Scraping port.hu for link with title: \e[93m%s\e[0m\n' "$search_name"
       port_link=$(curl -s "https://port.hu/search/suggest-list?q=$search_name_imdb" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
       port_description=$(curl -s "$port_link" | grep og:description | sed -r 's,>$, />,' | xmlstarlet sel -t -v '//meta/@content')
-	  printf '' "$port_description"
+      printf 'Description: \e[93m%.50s...\e[0m\n' "$port_description"
     fi
-  fi  
+  fi
   
   # Uploading torrent.
   printf 'IMDB.......: \e[93mhttps://www.imdb.com/title/%s\e[0m\n' "$imdb"
   printf 'link.......: \e[93m%s\e[0m\n' "$movie_database"
   printf 'Uploading..: \e[93m%s\e[0m\n' "$type"
-  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upload.php" \
+  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncorea.cc/upload.php" \
   -b "$cookies" \
   -F getUnique="$unique_id" \
   -F eredeti=igen \
@@ -274,7 +274,7 @@ for x in "$@"; do
   -F torrent_nev="$torrent_name" \
   -F torrent_fajl=@"$torrent_file" \
   -F nfo_fajl=@"$nfo_file"
-  -F szoveg="$port_description"  \
+  -F szoveg="$port_description" \
   -F kep1="$torrent_image_1" \
   -F kep2="$torrent_image_2" \
   -F kep3="$torrent_image_3" \
