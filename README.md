@@ -15,7 +15,7 @@ sudo curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/nc
 ```sh
 ncoreupload [input(s))
 ```
-Példák
+## Példák
 ```sh
 ncoreupload A.Dogs.Journey.2019.BDRip.x264.HuN-prldm
 ```
