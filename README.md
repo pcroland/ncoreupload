@@ -31,7 +31,6 @@ curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" -
 ## Frissítés
 ```sh
 install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup && hash -r
-curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o ~/.ncup/ncup.conf -s
 ```
 
 
