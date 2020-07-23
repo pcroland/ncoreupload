@@ -35,7 +35,6 @@ Példák:
 (egy konkrét mappa feltöltése)
 
 `ncup A.Dogs.Journey*prldm`
-
 (összes mappa feltöltése, aminek az eleje `A.Dogs.Journey` és a vége `prldm`)
 
 ## Működés közben
