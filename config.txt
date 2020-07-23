@@ -1,0 +1,4 @@
+torrent_program='mktor'
+generate_images='true'
+print_infobar='false'
+anonymous_upload='false'

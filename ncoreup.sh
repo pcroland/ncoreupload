@@ -1,10 +1,5 @@
 #!/bin/bash
 
-torrent_program='mktor'
-generate_images='true'
-print_infobar='false'
-anonymous_upload='false'
-
 # thumbnail generator
 imagegen() {
   seconds=$(ffprobe -i "$1" -show_format -v quiet | sed -n 's/duration=//p')
@@ -33,6 +28,8 @@ animation(){
     done
   done
 }
+
+source config.txt
 
 # Anonymous upload config.
 if [[ "$anonymous_upload" == true ]]; then
