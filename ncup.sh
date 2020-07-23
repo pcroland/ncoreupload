@@ -185,7 +185,7 @@ for x in "$@"; do
     imdb=$(grep -Po '(tt[[:digit:]]*)(?=/)' "$nfo_file")
   fi
   if [[ -z "$imdb" ]]; then
-    printf 'Scraping imdb.com for id.\n'
+    printf 'Scraping imdb.com for id\n'
     if [[ $type == hdser_hun || $type == xvidser_hun ]]; then
       search_name_folder=$(sed -E 's/.(S|E)[0-9]{2}.*//' <<< "$torrent_name" | tr '.' '+')
     else
@@ -253,8 +253,9 @@ for x in "$@"; do
     if [[ "$movie_database" == *port.hu* ]]; then
       port_description=$(curl -s "$movie_database" | grep og:description | sed -r 's,>$, />,' | xmlstarlet sel -t -v '//meta/@content')
     else
+	  printf 'Scraping IMDb for title with id: \e[93m%s\e[0m\n' "$imdb"
       search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
-      printf 'Scraping port.hu for link with title: \e[93m%s\e[0m\n' "$search_name"
+      printf 'Scraping port.hu for link with title: \e[93m%s\e[0m\n' "$search_name_imdb"
       port_link=$(curl -s "https://port.hu/search/suggest-list?q=$search_name_imdb" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
       port_description=$(curl -s "$port_link" | grep og:description | sed -r 's,>$, />,' | xmlstarlet sel -t -v '//meta/@content')
     fi
@@ -265,7 +266,7 @@ for x in "$@"; do
   printf 'IMDB.......: \e[93mhttps://www.imdb.com/title/%s\e[0m\n' "$imdb"
   printf 'link.......: \e[93m%s\e[0m\n' "$movie_database"
   printf 'Uploading..: \e[93m%s\e[0m\n' "$type"
-  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncorea.cc/upload.php" \
+  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upload.php" \
   -b "$cookies" \
   -F getUnique="$unique_id" \
   -F eredeti=igen \
