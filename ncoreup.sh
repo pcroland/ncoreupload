@@ -33,10 +33,11 @@ print_separator() {
   printf '%.0s─' $(seq 1 "$(tput cols)")
 }
 
+cookies=~/.ncoreupload/cookies.txt
+config=~/.ncoreupload/ncoreupload.conf
+
 # Searching for ncore_cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
-script_path=$(dirname "$(realpath -s "$0")")
-cookies=$script_path/ncore_cookies.txt
 if [ ! -f "$cookies" ]; then
   printf '\e[91m%s\e[0m\n' "ncore_cookies.txt not found, login: "
   read -r -p 'username: ' username
@@ -48,16 +49,16 @@ fi
 
 # Config setup.
 # shellcheck disable=SC1090
-source "$script_path"/ncoreupload.conf
+source "$config"
 [[ -z "$torrent_program" ]] && torrent_program='mktor'
 [[ -z "$generate_images" ]] && generate_images='true'
 [[ -z "$print_infobar" ]] && print_infobar='false'
 [[ -z "$anonymous_upload" ]] && anonymous_upload='false'
 
 # Anonymous upload config.
-if [[ ${anonymous_upload:?} == true ]]; then
+if [[ "$anonymous_upload" == true ]]; then
   anonymous='igen'
-elif [[ $anonymous_upload == false ]]; then
+elif [[ "$anonymous_upload" == false ]]; then
   anonymous='nem'
 else
   printf '\e[91m%s\e[0m\n' "Unsupported anonymous value."
