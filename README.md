@@ -1,5 +1,7 @@
-# ncup.sh
-## Feltöltő script nCore-ra eredeti release-ekhez film és sorozat kategóriában.
+# ncup
+### Feltöltő script nCore-ra eredeti release-ekhez film és sorozat kategóriában.
+
+## Leírás
 * A script automatikusan készít torrentet a megadott inputokhoz, ha még nincs.
 * A feltöltési kategóriát mappanévből állapítja meg.
 * Az IMDb id-t először NFO fájlban keresi, ha itt nem találja, mappanév alapján keresi ki IMDb-ről.
@@ -9,7 +11,6 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 * infobar.txt-ben manuálisan is meg lehet adni az infobar értékeket.
 * A script az `~/.ncup/` mappában tárolja a cookies és config fájlt.
 * Letölti a config fájlt, ha még nincs.
-* A script használatkor letölti a config fájlt, ha még nincs.
 * Ha nincs cookies.txt az `~/.ncup/` mappában, akkor login prompt jön elő. (Ha captcha-t dob az oldal nem fog működni)
 
 ## Szükséges programok
@@ -22,8 +23,15 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 ## Telepítés
 ```sh
 install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup && hash -r
+curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o ~/.ncup/ncup.conf -s
 ```
-Ha `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fájlunkba hogy: `PATH="$HOME/.local/bin:$PATH"`.
+* Ha a `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fájlunkba hogy: `PATH="$HOME/.local/bin:$PATH"`.
+
+## Frissítés
+```sh
+install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup && hash -r
+```
+
 
 ## Használat
 ```sh
