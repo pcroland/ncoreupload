@@ -7,16 +7,15 @@
 ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a címmel lekéri a linket.
 * Az első videófájlból generál mintaképeket a videó hossza alapján.
 * infobar.txt-ben manuálisan is meg lehet adni az infobar értékeket.
-
-## Telepítés
-```sh
-install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncoreup.sh) ~/.local/bin/ncoreup && hash -r
-```
 ## Szükséges programok
 * ffmpeg
 * ffprobe
 * mktor/mktorrent
 * jq
+## Telepítés
+```sh
+install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncoreup.sh) ~/.local/bin/ncoreup && hash -r
+```
 ## Használat
 ```sh
 ncoreupload [input(s)]
