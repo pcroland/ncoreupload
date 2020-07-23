@@ -132,11 +132,7 @@ if [ -z "$movie_database" ]; then
 fi
 if [ -z "$movie_database" ]; then
   printf "Scraping port.hu for movie database.\n"
-  if [[ "$type" == hdser_hun || "$type" == xvidser_hun ]]; then
-    search_name=$(sed -E 's/.(S|E)[0-9]{2}.*//' <<< "$torrent_name" | tr '.' '+')
-  else
-    search_name=$(sed -E 's/(.[0-9]{4}).*//' <<< "$torrent_name" | tr '.' '+')
-  fi
+  search_name=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
   movie_database=$(curl -s "https://port.hu/search/suggest-list?q=$search_name" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
 fi
 
