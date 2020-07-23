@@ -51,7 +51,7 @@ if [ ! -f "$cookies" ]; then
   curl 'https://ncore.cc/login.php' -c "$cookies" -s -d "submitted=1" --data-urlencode "nev=$username" --data-urlencode "pass=$password" -d "ne_leptessen_ki=1"
   if grep -q deleted "$cookie_file" 2>/dev/null; then
     printf '\e[91m%s\e[0m\n' "ERROR: login failed." >&2
-	rm "$ookies"
+    rm "$ookies"
     exit 1
   fi
   print_separator
