@@ -40,7 +40,7 @@ if [[ "$anonymous_upload" == true ]]; then
 elif [[ "$anonymous_upload" == false ]]; then
   anonymous='nem'
 else
-  printf '\e[91m%s\e[0m\n' "Unsupported torrent program."
+  printf '\e[91m%s\e[0m\n' "Unsupported anonymous value."
   exit 1
 fi
 
