@@ -19,6 +19,7 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 * `mktor`/`mktorrent` (configolható)
 * `curl`
 * `jq`
+* `xmlstarlet` (ha a config fájlban `description='true'` van)
 
 ## Telepítés
 ```sh
