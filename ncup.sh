@@ -309,5 +309,7 @@ for x in "$@"; do
 done
 
 # Deleting thumbnails.
-printf 'Deleting thumbnails.\n'
-rm -f torrent_image_*
+if [[ -f torrent_image_1.png ]]; then
+  printf 'Deleting thumbnails.\n'
+  rm torrent_image_*png
+fi
