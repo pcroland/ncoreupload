@@ -10,7 +10,7 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 ## Szükséges programok
 * ffmpeg
 * ffprobe
-* mktor/mktorrent
+* mktor/mktorrent (script tetején állítható)
 * jq
 ## Telepítés
 ```sh
