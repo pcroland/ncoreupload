@@ -35,7 +35,7 @@ print_separator() {
 
 cookies=~/.ncoreupload/cookies.txt
 config=~/.ncoreupload/ncoreupload.conf
-if [[ -f "$config" ]]; then
+if [[ ! -f "$config" ]]; then
   printf 'Creating config file in: \e[93m%s\e[0m\n' "$config"
   curl https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncoreupload.conf -o "$config" -s
 fi
@@ -226,7 +226,7 @@ for x in "$@"; do
   fi
 
   # Print infobar values.
-  if [[ ${print_infobar:?} == true ]]; then
+  if [[ "$print_infobar" == true ]]; then
     printf 'Hun title..: \e[93m%s\e[0m\n' "$hun_title"
     printf 'Eng title..: \e[93m%s\e[0m\n' "$eng_title"
     printf 'For title..: \e[93m%s\e[0m\n' "$for_title"
