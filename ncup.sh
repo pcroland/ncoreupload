@@ -257,8 +257,8 @@ for x in "$@"; do
       printf 'Scraping port.hu for link with title: \e[93m%s\e[0m\n' "$search_name"
       port_link=$(curl -s "https://port.hu/search/suggest-list?q=$search_name_imdb" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
       port_description=$(curl -s "$port_link" | grep og:description | sed -r 's,>$, />,' | xmlstarlet sel -t -v '//meta/@content')
-      printf 'Description: \e[93m%.50s...\e[0m\n' "$port_description"
     fi
+	printf 'Description: \e[93m%.50s...\e[0m\n' "$port_description"
   fi
   
   # Uploading torrent.
@@ -273,7 +273,7 @@ for x in "$@"; do
   -F tipus="$type" \
   -F torrent_nev="$torrent_name" \
   -F torrent_fajl=@"$torrent_file" \
-  -F nfo_fajl=@"$nfo_file"
+  -F nfo_fajl=@"$nfo_file" \
   -F szoveg="$port_description" \
   -F kep1="$torrent_image_1" \
   -F kep2="$torrent_image_2" \
