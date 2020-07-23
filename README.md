@@ -11,7 +11,7 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 ## Szükséges programok
 * `ffmpeg`
 * `ffprobe`
-* `mktor`/`mktorrent` (script tetején állítható)
+* `mktor`/`mktorrent` (configolható)
 * `curl`
 * `jq`
 
@@ -20,6 +20,7 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncoreup.sh) ~/.local/bin/ncoreup && hash -r
 ```
 * Ha `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fájlunkba hogy: `PATH="$HOME/.local/bin:$PATH"`.
+* A script tetején configolható a torrent program, a kép generálás, az infobar kiírás feltöltéskor és az anonymous feltöltés is.
 
 ## Használat
 ```sh
