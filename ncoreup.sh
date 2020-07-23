@@ -3,6 +3,7 @@
 torrent_program='mktor'
 generate_images='true'
 print_infobar='false'
+anonymous_upload='false'
 
 # thumbnail generator
 imagegen() {
@@ -32,6 +33,16 @@ animation(){
     done
   done
 }
+
+# Anonymous upload config.
+if [[ "$anonymous_upload" == true ]]; then
+  anonymous='igen'
+elif [[ "$anonymous_upload" == false ]]; then
+  anonymous='nem'
+else
+  printf '\e[91m%s\e[0m\n' "Unsupported torrent program."
+  exit 1
+fi
 
 # Searching for ncore_cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
@@ -223,7 +234,7 @@ torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upl
 -F szezon="$seasons" \
 -F epizod_szamok="$episodes" \
 -F keresre=nem \
--F anonymous=nem \
+-F anonymous="$anonymous" \
 -F elrejt=nem \
 -F mindent_tud1=szabalyzat \
 -F mindent_tud3=seedeles)
