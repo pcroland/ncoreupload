@@ -1,5 +1,5 @@
 # ncoreupload
-##Feltöltő script nCore-ra eredeti magyar film/sorozat release-ekhez.
+## Feltöltő script nCore-ra eredeti magyar film/sorozat release-ekhez.
 * A script automatikusan készít torrentet a megadott inputokhoz, ha még nincs.
 * A feltöltési kategóriát mappanévből állapítja meg.
 * Az IMDb id-t először NFO fájlban keresi, ha itt nem találja, mappanév alapján keresi ki IMDb-ről.
