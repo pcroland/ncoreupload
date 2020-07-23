@@ -1,4 +1,4 @@
-# ncup.sh
+# ncup
 ## Feltöltő script nCore-ra eredeti release-ekhez film és sorozat kategóriában.
 * A script automatikusan készít torrentet a megadott inputokhoz, ha még nincs.
 * A feltöltési kategóriát mappanévből állapítja meg.
