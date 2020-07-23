@@ -122,17 +122,33 @@ for x in "$@"; do
   printf '\e[92m%s\e[0m\n' "$torrent_name"
 
   # Defining torrent category.
-  if grep -qE "(720p|1080p|2160p|4320p)" <<< "$torrent_name"; then
-    if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
-      type=hdser_hun
+  if grep -qEi "\.hun(\.|\-)" <<< "$torrent_name"; then
+    if grep -qE "(720p|1080p|2160p|4320p)" <<< "$torrent_name"; then
+      if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
+        type=hdser_hun
+      else
+        type=hd_hun
+      fi
     else
-      type=hd_hun
+      if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
+        type=xvidser_hun
+      else
+        type=xvid_hun
+      fi
     fi
   else
-    if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
-      type=xvidser_hun
+    if grep -qE "(720p|1080p|2160p|4320p)" <<< "$torrent_name"; then
+      if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
+        type=hdser
+      else
+        type=hd
+      fi
     else
-      type=xvid_hun
+      if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
+        type=xvidser
+      else
+        type=xvid
+      fi
     fi
   fi
 
