@@ -30,7 +30,7 @@ animation(){
 }
 
 print_separator() {
-  printf '%.0s─' $(seq 1 "$COLUMNS")
+  printf '%.0s─' $(seq 1 "$(tput cols)")
 }
 
 # Searching for ncore_cookies.txt next to the script,
