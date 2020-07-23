@@ -131,8 +131,9 @@ if [ -z "$movie_database" ]; then
   movie_database=$(cat -v "$nfo_file" | grep -Eo "(http|https)://[a-zA-Z0-9./?=_%:-]*" | grep 'tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' | head -1)
 fi
 if [ -z "$movie_database" ]; then
-  printf "Scraping port.hu for movie database.\n"
+  printf 'Scraping IMDb for title with id: \e[93m%s\e[0m\n' "$imdb"
   search_name=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
+  printf 'Scraping port.hu for link with title: \e[93m%s\e[0m\n' "$search_name"
   movie_database=$(curl -s "https://port.hu/search/suggest-list?q=$search_name" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
 fi
 
