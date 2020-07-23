@@ -9,11 +9,11 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 * infobar.txt-ben manuálisan is meg lehet adni az infobar értékeket.
 
 ## Szükséges programok
-* ffmpeg
-* ffprobe
-* mktor/mktorrent (script tetején állítható)
-* curl
-* jq
+* `ffmpeg`
+* `ffprobe`
+* `mktor`/`mktorrent` (script tetején állítható)
+* `curl`
+* `jq`
 
 ## Telepítés
 ```sh
