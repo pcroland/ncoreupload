@@ -2,6 +2,7 @@
 
 torrent_program='mktor'
 generate_images='true'
+print_infobar='false'
 
 # thumbnail generator
 imagegen() {
@@ -177,16 +178,18 @@ if [ -f torrent_image_1.png ]; then
 fi
 
 # Print infobar values.
-#printf 'Hun title..: \e[93m%s\e[0m\n' "$hun_title"
-#printf 'Eng title..: \e[93m%s\e[0m\n' "$eng_title"
-#printf 'For title..: \e[93m%s\e[0m\n' "$for_title"
-#printf 'Release....: \e[93m%s\e[0m\n' "$release_date"
-#printf 'Rank.......: \e[93m%s\e[0m\n' "$infobar_rank"
-#printf 'Genres.....: \e[93m%s\e[0m\n' "$infobar_genres"
-#printf 'Country....: \e[93m%s\e[0m\n' "$country"
-#printf 'Runtime....: \e[93m%s\e[0m\n' "$runtime"
-#printf 'Director...: \e[93m%s\e[0m\n' "$director"
-#printf 'Cast.......: \e[93m%s\e[0m\n' "$cast"
+if [[ "$print_infobar" == true ]]; then
+  printf 'Hun title..: \e[93m%s\e[0m\n' "$hun_title"
+  printf 'Eng title..: \e[93m%s\e[0m\n' "$eng_title"
+  printf 'For title..: \e[93m%s\e[0m\n' "$for_title"
+  printf 'Release....: \e[93m%s\e[0m\n' "$release_date"
+  printf 'Rank.......: \e[93m%s\e[0m\n' "$infobar_rank"
+  printf 'Genres.....: \e[93m%s\e[0m\n' "$infobar_genres"
+  printf 'Country....: \e[93m%s\e[0m\n' "$country"
+  printf 'Runtime....: \e[93m%s\e[0m\n' "$runtime"
+  printf 'Director...: \e[93m%s\e[0m\n' "$director"
+  printf 'Cast.......: \e[93m%s\e[0m\n' "$cast"
+fi
 
 # Uploading torrent.
 printf 'IMDB.......: \e[93mhttps://www.imdb.com/title/%s\e[0m\n' "$imdb"
