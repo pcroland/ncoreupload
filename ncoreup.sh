@@ -92,11 +92,11 @@ fi
 # it will get "$imdb" and "$$movie_database" from the NFO file or scrape the sites,
 # "$hun_title" "$release_date" and other infobar values will be parsed from the site.
 for x in "$@"; do
+seasons=
+episodes=
 if [ -f infobar.txt ]; then
   source infobar.txt
 fi
-seasons=
-episodes=
 torrent_name=$(basename "$x")
 torrent_file="$torrent_name".torrent
 nfo_file=$(ls "$x"/*nfo)
