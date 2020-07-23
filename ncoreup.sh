@@ -1,5 +1,7 @@
 #!/bin/bash
 
+torrent_program='mktor'
+
 # thumbnail generator
 imagegen() {
   seconds=$(ffprobe -i "$1" -show_format -v quiet | sed -n 's/duration=//p')
@@ -68,8 +70,14 @@ for x in "$@"; do
     printf '\r\e[92m%s\e[0m\n' "$torrent_name"
     animation &
     pid=$!
-    mktor "$x" http://bithumen.be:11337/announce -o "$torrent_file" &> /dev/null
-#   mktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" &> /dev/null
+	if [[ "$torrent_program" == mktor ]]; then
+      mktor "$x" http://bithumen.be:11337/announce -o "$torrent_file" &> /dev/null
+    elif [[ "$torrent_program" == mktorrent ]]; then
+      mktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" &> /dev/null
+	else
+	  printf '\e[91m%s\e[0m\n' "Unsupported torrent program."
+	  exit 1
+	fi
     kill -PIPE "$pid"
   fi
 done
