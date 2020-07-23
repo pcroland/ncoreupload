@@ -1,6 +1,7 @@
 #!/bin/bash
 
 torrent_program='mktor'
+generate_images='true'
 
 # thumbnail generator
 imagegen() {
@@ -113,8 +114,12 @@ else
 fi
 
 # Generating thumbnail images from the first mkv/mp4/avi file if there's one.
-file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | head -n 1)
-if [ "$file" ]; then imagegen "$file"; fi
+if [[ "$generate_images" == true ]]; then
+  file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | head -n 1)
+  if [ "$file" ]; then
+    imagegen "$file"
+  fi
+fi
 
 # Setting IMDb id from NFO file if it's not set manually in infobar.txt,
 # if that fails it will scrape imdb.com for an id based on the torrent name.
