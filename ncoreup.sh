@@ -60,7 +60,7 @@ if [ ! -f "$cookies" ]; then
   read -r -p 'username: ' username
   read -r -s -p 'password: ' password
   printf '\n'
-  sudo curl 'https://ncore.cc/login.php' -c "$cookies" -s -d "submitted=1" --data-urlencode "nev=$username" --data-urlencode "pass=$password" -d "ne_leptessen_ki=1"
+  curl 'https://ncore.cc/login.php' -c "$cookies" -s -d "submitted=1" --data-urlencode "nev=$username" --data-urlencode "pass=$password" -d "ne_leptessen_ki=1"
   print_separator
 fi
 
