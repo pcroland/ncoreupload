@@ -13,7 +13,7 @@ install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreu
 ```
 ## Használat
 ```sh
-ncoreupload [input(s))
+ncoreupload [input(s)]
 ```
 ## Példák
 ```sh
