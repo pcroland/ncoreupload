@@ -65,7 +65,7 @@ if [[ "$anonymous_upload" == true ]]; then
 elif [[ "$anonymous_upload" == false ]]; then
   anonymous='nem'
 else
-  printf '\e[91m%s\e[0m\n' "Unsupported anonymous value."
+  printf '\e[91m%s\e[0m\n' "ERROR: unsupported anonymous value." >&2
   exit 1
 fi
 
@@ -91,12 +91,12 @@ for x in "$@"; do
     printf '\r\e[92m%s\e[0m\n' "$torrent_name"
     animation &
     pid=$!
-    if [[ ${torrent_program:?} == mktor ]]; then
+    if [[ "$torrent_program" == mktor ]]; then
       mktor "$x" http://bithumen.be:11337/announce -o "$torrent_file" &> /dev/null
     elif [[ $torrent_program == mktorrent ]]; then
       mktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" &> /dev/null
     else
-      printf '\e[91m%s\e[0m\n' "Unsupported torrent program."
+      printf '\e[91m%s\e[0m\n' "ERROR: unsupported torrent program." >&2
       exit 1
     fi
     kill -PIPE "$pid"
