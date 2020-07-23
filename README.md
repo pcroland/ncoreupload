@@ -11,7 +11,6 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 * infobar.txt-ben manuálisan is meg lehet adni az infobar értékeket.
 * A script az `~/.ncup/` mappában tárolja a cookies és config fájlt.
 * Letölti a config fájlt, ha még nincs.
-* A script használatkor letölti a config fájlt, ha még nincs.
 * Ha nincs cookies.txt az `~/.ncup/` mappában, akkor login prompt jön elő. (Ha captcha-t dob az oldal nem fog működni)
 
 ## Szükséges programok
