@@ -1,5 +1,5 @@
 # ncup
-###Feltöltő script nCore-ra eredeti release-ekhez film és sorozat kategóriában.
+### Feltöltő script nCore-ra eredeti release-ekhez film és sorozat kategóriában.
 
 ## Leírás
 * A script automatikusan készít torrentet a megadott inputokhoz, ha még nincs.
