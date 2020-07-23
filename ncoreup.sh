@@ -33,6 +33,14 @@ print_separator() {
   printf '%.0s─' $(seq 1 "$COLUMNS")
 }
 
+# Config.
+# shellcheck disable=SC1090
+source "$script_path"/ncoreupload.conf
+[[ -z "$torrent_program" ]] && torrent_program='mktor'
+[[ -z "$generate_images" ]] && generate_images='true'
+[[ -z "$print_infobar" ]] && print_infobar='false'
+[[ -z "$anonymous_upload" ]] && anonymous_upload='false'
+
 # Anonymous upload config.
 if [[ ${anonymous_upload:?} == true ]]; then
   anonymous='igen'
@@ -55,10 +63,6 @@ if [ ! -f "$cookies" ]; then
   sudo curl 'https://ncore.cc/login.php' -c "$cookies" -s -d "submitted=1" --data-urlencode "nev=$username" --data-urlencode "pass=$password" -d "ne_leptessen_ki=1"
   print_separator
 fi
-
-# Config.
-# shellcheck disable=SC1090
-source "$script_path"/ncoreupload.conf
 
 # Grabbing the getUnique id.
 printf "Grabbing getUnique id: "
