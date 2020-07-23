@@ -40,6 +40,7 @@ if [[ ! -f "$config" ]]; then
   curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o "$config" -s
 fi
 
+
 # Searching for cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
 # If login fails exit.
