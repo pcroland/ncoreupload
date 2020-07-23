@@ -9,7 +9,7 @@
 
 ## Telepítés
 ```sh
-sudo curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncoreup.sh -o /usr/local/bin/ncoreup && sudo chmod +x /usr/local/bin/ncoreup && rehash
+curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncoreup.sh -o ~/.local/bin/ncoreup && chmod +x /usr/local/bin/ncoreup && rehash
 ```
 ## Használat
 ```sh
