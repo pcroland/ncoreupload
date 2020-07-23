@@ -40,14 +40,20 @@ if [[ ! -f "$config" ]]; then
   curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o "$config" -s
 fi
 
-# Searching for ncore_cookies.txt next to the script,
+# Searching for cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
+# If login fails exit.
 if [ ! -f "$cookies" ]; then
-  printf '\e[91m%s\e[0m\n' "ncore_cookies.txt not found, login: "
+  printf '\e[91m%s\e[0m\n' "cookies.txt not found, login: "
   read -r -p 'username: ' username
   read -r -s -p 'password: ' password
   printf '\n'
   curl 'https://ncore.cc/login.php' -c "$cookies" -s -d "submitted=1" --data-urlencode "nev=$username" --data-urlencode "pass=$password" -d "ne_leptessen_ki=1"
+  if grep -q deleted "$cookie_file" 2>/dev/null; then
+    printf '\e[91m%s\e[0m\n' "ERROR: login failed." >&2
+	rm "$ookies"
+    exit 1
+  fi
   print_separator
 fi
 
@@ -162,7 +168,7 @@ for x in "$@"; do
   fi
 
   # Generating thumbnail images from the first mkv/mp4/avi file if there's one.
-  if [[ ${generate_images:?} == true ]]; then
+  if [[ "$generate_images" == true ]]; then
     files=(*.mkv *.mp4 *.avi)
     file=${files[0]}
     if [[ -f "$file" ]]; then
