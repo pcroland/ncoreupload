@@ -29,8 +29,6 @@ animation(){
   done
 }
 
-source config.txt
-
 # Anonymous upload config.
 if [[ "$anonymous_upload" == true ]]; then
   anonymous='igen'
@@ -57,6 +55,9 @@ if [ ! -f "$cookies" ]; then
   sudo curl 'https://ncore.cc/login.php' -c "$cookies" -s --data-raw "submitted=1&nev=$username&pass=$password&ne_leptessen_ki=1"
   eval printf %.0s─ '{1..'"${COLUMNS:-$(tput cols)}"\}; echo
 fi
+
+# Config.
+source "$script_path"/ncoreupload.conf
 
 # Grabbing the getUnique id.
 printf "Grabbing getUnique id: "
