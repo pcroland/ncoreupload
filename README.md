@@ -17,6 +17,7 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 ```sh
 install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncoreup.sh) ~/.local/bin/ncoreup && hash -r
 ```
+* ha `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fájlunkba hogy: `PATH="$HOME/.local/bin:$PATH"`
 ## Használat
 ```sh
 ncoreupload [input(s)]
