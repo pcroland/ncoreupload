@@ -33,11 +33,11 @@ print_separator() {
   printf '%.0s─' $(seq 1 "$(tput cols)")
 }
 
-cookies=~/.ncoreupload/cookies.txt
-config=~/.ncoreupload/ncoreupload.conf
+cookies=~/.ncup/cookies.txt
+config=~/.ncup/ncup.conf
 if [[ ! -f "$config" ]]; then
   printf 'Creating config file in: \e[93m%s\e[0m\n' "$config"
-  curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncoreupload.conf --create-dirs" -o "$config" -s
+  curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf --create-dirs" -o "$config" -s
 fi
 
 # Searching for ncore_cookies.txt next to the script,
