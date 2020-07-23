@@ -220,12 +220,12 @@ torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upl
 printf 'Downloading: \e[93m%s\e[0m\n' "$torrent_link"
 torrent_page=$(curl "$torrent_link" -b ncore_cookies.txt -s)
 id_with_passkey=$(grep -m 1 -o -P '(?<=action\=download&id\=).*(?=\">)' <<< "$torrent_page")
-curl "https://ncore.cc/torrents.php?action=download&id=$id_with_passkey" -b ncore_cookies.txt -s -o "$torrent_name"_nc.torrent
+curl "https://ncore.cc/torrents.php?action=download&id=$id_with_passkey" -b "$cookies" -s -o "$torrent_name"_nc.torrent
 
 # Posting to feed.
 #printf "Posting to feed.\n"
 #torrent_id=$(grep -m 1 -o -P '(?<=addnews\&id\=).*(?=\&getunique)' <<< "$torrent_page")
-#curl https://ncore.cc/torrents.php?action=addnews&id="$torrent_id"&getunique="$unique_id" -b ncore_cookies.txt -s
+#curl https://ncore.cc/torrents.php?action=addnews&id="$torrent_id"&getunique="$unique_id" -b "$cookies" -s
 
 # Drawing a separator after each torrent.
 ((t++))
