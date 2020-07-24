@@ -36,7 +36,7 @@ print_separator() {
 cookies=~/.ncup/cookies.txt
 config=~/.ncup/ncup.conf
 if [[ ! -f "$config" ]]; then
-  printf 'Creating config file in: \e[93m%s\e[0m\n' "$config"
+  printf 'No config found, downloading in: \e[93m%s\e[0m\n' "$config"
   curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o "$config" -s
 fi
 
@@ -67,6 +67,8 @@ source "$config"
 [[ -z "$generate_images" ]] && generate_images='true'
 [[ -z "$print_infobar" ]] && print_infobar='false'
 [[ -z "$anonymous_upload" ]] && anonymous_upload='false'
+[[ -z "$description" ]] && description='false'
+
 
 # Anonymous upload config.
 if [[ "$anonymous_upload" == true ]]; then
@@ -90,11 +92,26 @@ else
   printf 'infobar.txt was not found.\n'
 fi
 print_separator
+printf '\n'
 
+# Creating NFO file with mediainfo if it doesn't exist yet.
+# exit if there are multiple NFO files in the folder.
 # Creating torrent file if it doesn't exist yet.
 for x in "$@"; do
   torrent_name=$(basename "$x")
-  torrent_file=$torrent_name.torrent
+  torrent_file="$torrent_name".torrent
+  nfo_files=("$x"/*.nfo)
+  nfo_file=${nfo_files[0]}
+  if (( ${#nfo_files[@]} > 1 )); then
+    printf '\e[91m%s\e[0m\n' "ERROR: multiple NFO files found." >&2
+    exit 1
+  fi
+  if [[ ! -f "$nfo_file" ]]; then
+    nfo_created=1
+    printf '%s\n' "Missing NFO file, creating one with mediainfo."
+	mediainfo "$x" > "$x"/"$torrent_name".nfo
+  fi
+  
   if [[ ! -f "$torrent_file" ]]; then
     torrent_created=1
     printf '\r\e[92m%s\e[0m\n' "$torrent_name"
@@ -111,7 +128,8 @@ for x in "$@"; do
     kill -PIPE "$pid"
   fi
 done
-if (( torrent_created )); then
+if (( torrent_created || nfo_created )); then
+  printf '\n'
   print_separator
 fi
 
@@ -130,14 +148,10 @@ for x in "$@"; do
     source infobar.txt
   fi
 
+  # Setting up torrent and NFO file.
   torrent_name=$(basename "$x")
-  torrent_file=$torrent_name.torrent
-  nfo_files=("$x"/*.nfo)
-  if (( ${#nfo_files[@]} > 1 )); then
-    echo 'ERROR: multiple NFO files found' >&2
-    exit 1
-  fi
-  nfo_file=${nfo_files[0]}
+  torrent_file="$torrent_name".torrent
+  nfo_file=("$x"/*.nfo)
 
   # Defining torrent category.
   if grep -qEi "\.hun(\.|\-)" <<< "$torrent_name"; then
@@ -182,6 +196,7 @@ for x in "$@"; do
   # Setting IMDb id from NFO file if it's not set manually in infobar.txt,
   # if that fails it will scrape imdb.com for an id based on the torrent name.
   if [[ -z "$imdb" ]]; then
+    # shellcheck disable=SC2128
     imdb=$(grep -Po '(tt[[:digit:]]*)(?=/)' "$nfo_file")
   fi
   if [[ -z "$imdb" ]]; then
@@ -201,10 +216,11 @@ for x in "$@"; do
   # Setting link from the NFO file (tvmaze.com/port.hu/rottentomatoes.com) if it's not set manually in infobar.txt,
   # if that fails it will scrape port.hu for an id based on the torrent name.
   if [[ -z "$movie_database" ]]; then
+    # shellcheck disable=SC2128
     movie_database=$(grep -Eo "(http|https)://[a-zA-Z0-9./?=_%:-]*" "$nfo_file" | grep 'tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' | head -1)
   fi
   if [[ -z "$movie_database" ]]; then
-    printf "Scraping IMDb for title."
+    printf 'Scraping IMDb for title.\n'
     search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
     printf 'Scraping port.hu for link with title: \e[93m%s\e[0m\n' "$search_name_imdb"
     movie_database=$(curl -s "https://port.hu/search/suggest-list?q=$search_name_imdb" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
@@ -265,10 +281,12 @@ for x in "$@"; do
   fi
   
   # Uploading torrent.
+  # shellcheck disable=SC2128
   printf 'IMDB.......: \e[93mhttps://www.imdb.com/title/%s\e[0m\n' "$imdb"
   printf 'link.......: \e[93m%s\e[0m\n' "$movie_database"
   printf 'Uploading..: \e[93m%s\e[0m\n' "$type"
-  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upload.php" \
+  # shellcheck disable=SC2128
+  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncorea.cc/upload.php" \
   -b "$cookies" \
   -F getUnique="$unique_id" \
   -F eredeti=igen \
