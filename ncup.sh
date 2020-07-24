@@ -50,7 +50,7 @@ if [[ ! -f "$cookies" ]]; then
   printf '\n'
   mkdir -p "$(dirname "$cookies")"
   curl 'https://ncore.cc/login.php' -c "$cookies" -s -d "submitted=1" --data-urlencode "nev=$username" --data-urlencode "pass=$password" -d "ne_leptessen_ki=1"
-  if [[ $(curl -s -I -b "$cookies_file" 'https://ncore.cc/' -o /dev/null -w '%{http_code}') == 200 ]]; then
+  if [[ $(curl -s -I -b "$cookies" 'https://ncore.cc/' -o /dev/null -w '%{http_code}') == 200 ]]; then
     printf '\e[92m%s\e[0m\n' "Cookies OK."
   else
     printf '\e[91m%s\e[0m\n' "ERROR: login failed." >&2
@@ -250,6 +250,7 @@ for x in "$@"; do
   fi
   
   # Grab description from port.hu
+  # shellcheck disable=SC2154
   if [[ "$description" == true ]]; then
     if [[ "$movie_database" == *port.hu* ]]; then
       port_description=$(curl -s "$movie_database" | grep og:description | sed -r 's,>$, />,' | xmlstarlet sel -t -v '//meta/@content')
