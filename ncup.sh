@@ -194,8 +194,7 @@ for x in "$@"; do
 
   # Generating thumbnail images from the first mkv/mp4/avi file if there's one.
   if [[ "$generate_images" == true ]]; then
-    files=(*.mkv *.mp4 *.avi)
-    file=${files[0]}
+    file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | head -n 1)
     if [[ -f "$file" ]]; then
       imagegen "$file"
     fi
@@ -294,7 +293,7 @@ for x in "$@"; do
   printf 'link.......: \e[93m%s\e[0m\n' "$movie_database"
   printf 'Uploading..: \e[93m%s\e[0m\n' "$type"
   # shellcheck disable=SC2128
-  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncorea.cc/upload.php" \
+  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upload.php" \
   -b "$cookies" \
   -F getUnique="$unique_id" \
   -F eredeti=igen \
