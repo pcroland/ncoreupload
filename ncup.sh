@@ -96,10 +96,8 @@ printf '\n'
 
 # Creating NFO file with mediainfo if it doesn't exist yet.
 # exit if there are multiple NFO files in the folder.
-# Creating torrent file if it doesn't exist yet.
 for x in "$@"; do
   torrent_name=$(basename "$x")
-  torrent_file="$torrent_name".torrent
   nfo_files=("$x"/*.nfo)
   nfo_file=${nfo_files[0]}
   if (( ${#nfo_files[@]} > 1 )); then
@@ -108,10 +106,19 @@ for x in "$@"; do
   fi
   if [[ ! -f "$nfo_file" ]]; then
     nfo_created=1
-    printf '%s\n' "Missing NFO file, creating one with mediainfo."
+    printf 'NFO is missing, creating one with mediainfo for: %s\n' "$torrent_name"
 	mediainfo "$x" > "$x"/"$torrent_name".nfo
   fi
-  
+done
+if (( nfo_created )); then
+  print_separator
+  printf '\n'
+fi
+
+# Creating torrent file if it doesn't exist yet.
+for x in "$@"; do
+  torrent_name=$(basename "$x")
+  torrent_file="$torrent_name".torrent
   if [[ ! -f "$torrent_file" ]]; then
     torrent_created=1
     printf '\r\e[92m%s\e[0m\n' "$torrent_name"
@@ -128,7 +135,7 @@ for x in "$@"; do
     kill -PIPE "$pid"
   fi
 done
-if (( torrent_created || nfo_created )); then
+if (( torrent_created )); then
   printf '\n'
   print_separator
 fi
