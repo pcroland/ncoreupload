@@ -293,7 +293,7 @@ for x in "$@"; do
   printf 'link.......: \e[93m%s\e[0m\n' "$movie_database"
   printf 'Uploading..: \e[93m%s\e[0m\n' "$type"
   # shellcheck disable=SC2128
-  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upload.php" \
+  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncorea.cc/upload.php" \
   -b "$cookies" \
   -F getUnique="$unique_id" \
   -F eredeti=igen \
