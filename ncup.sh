@@ -36,7 +36,7 @@ print_separator() {
 cookies=~/.ncup/cookies.txt
 config=~/.ncup/ncup.conf
 if [[ ! -f "$config" ]]; then
-  printf 'No config found, downloading in: \e[93m%s\e[0m\n' "$config"
+  printf 'Missing config, downloading in: \e[93m%s\e[0m\n' "$config"
   curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o "$config" -s
 fi
 
@@ -92,7 +92,7 @@ else
   printf 'infobar.txt was not found.\n'
 fi
 print_separator
-printf '\n'
+#printf '\n'
 
 # Creating NFO file with mediainfo if it doesn't exist yet.
 # exit if there are multiple NFO files in the folder.
