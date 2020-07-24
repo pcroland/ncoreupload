@@ -22,6 +22,7 @@ animation(){
   animation=('░▒▓█▓▒░ ' ' ░▒▓█▓▒░' '░ ░▒▓█▓▒' '▒░ ░▒▓█▓' '▓▒░ ░▒▓█' '█▓▒░ ░▒▓' '▓█▓▒░ ░▒' '▒▓█▓▒░ ░')
   while true
   do
+  printf '\n'
     for i in "${animation[@]}"; do
       printf '\rCreating torrent \e[93m%-8s\e[0m' "$i"
       sleep 0.1
@@ -96,32 +97,24 @@ print_separator
 
 # Creating NFO file with mediainfo if it doesn't exist yet.
 # exit if there are multiple NFO files in the folder.
+# Creating torrent file if it doesn't exist yet.
 for x in "$@"; do
   torrent_name=$(basename "$x")
+  torrent_file="$torrent_name".torrent
   nfo_files=("$x"/*.nfo)
   nfo_file=${nfo_files[0]}
+  printf '\e[92m%s\e[0m\n' "$torrent_name"
   if (( ${#nfo_files[@]} > 1 )); then
     printf '\e[91m%s\e[0m\n' "ERROR: multiple NFO files found." >&2
     exit 1
   fi
   if [[ ! -f "$nfo_file" ]]; then
     nfo_created=1
-    printf 'NFO is missing, creating one with mediainfo for: %s\n' "$torrent_name"
+    printf "Creating NFO. %s\n"
 	mediainfo "$x" > "$x"/"$torrent_name".nfo
   fi
-done
-if (( nfo_created )); then
-  print_separator
-  printf '\n'
-fi
-
-# Creating torrent file if it doesn't exist yet.
-for x in "$@"; do
-  torrent_name=$(basename "$x")
-  torrent_file="$torrent_name".torrent
   if [[ ! -f "$torrent_file" ]]; then
     torrent_created=1
-    printf '\r\e[92m%s\e[0m\n' "$torrent_name"
     animation &
     pid=$!
     if [[ "$torrent_program" == mktor ]]; then
@@ -135,7 +128,7 @@ for x in "$@"; do
     kill -PIPE "$pid"
   fi
 done
-if (( torrent_created )); then
+if (( torrent_created || nfo_created )); then
   printf '\n'
   print_separator
 fi
