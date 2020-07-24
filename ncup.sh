@@ -185,7 +185,7 @@ for x in "$@"; do
     imdb=$(grep -Po '(tt[[:digit:]]*)(?=/)' "$nfo_file")
   fi
   if [[ -z "$imdb" ]]; then
-    printf 'Scraping imdb.com for id\n'
+    printf "Scraping imdb.com for id: "
     if [[ $type == hdser_hun || $type == xvidser_hun ]]; then
       search_name_folder=$(sed -E 's/.(S|E)[0-9]{2}.*//' <<< "$torrent_name" | tr '.' '+')
     else
@@ -195,6 +195,7 @@ for x in "$@"; do
     prefix=${prefix,,}
     imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/${prefix}/${search_name_folder}.json" | jq -r 'if .d then .d[0].id else empty end')
     #imdb=$(curl "https://www.imdb.com/find?q=$search_name_folder" -s | grep -Po "(tt[[:digit:]]*)(?=\/)" | head -1)
+	printf '\e[93m%s\e[0m\n' "$imdb"
   fi
 
   # Setting link from the NFO file (tvmaze.com/port.hu/rottentomatoes.com) if it's not set manually in infobar.txt,
@@ -203,14 +204,14 @@ for x in "$@"; do
     movie_database=$(grep -Eo "(http|https)://[a-zA-Z0-9./?=_%:-]*" "$nfo_file" | grep 'tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' | head -1)
   fi
   if [[ -z "$movie_database" ]]; then
-    printf 'Scraping IMDb for title with id: \e[93m%s\e[0m\n' "$imdb"
+    printf "Scraping IMDb for title."
     search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
     printf 'Scraping port.hu for link with title: \e[93m%s\e[0m\n' "$search_name_imdb"
     movie_database=$(curl -s "https://port.hu/search/suggest-list?q=$search_name_imdb" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
   fi
 
   # Grabbing infobar page.
-  printf 'Saving infobar with IMDb id: \e[93m%s\e[0m\n' "$imdb"
+  printf '%s\n' "Saving infobar."
   ajax_infobar=$(curl "https://ncore.cc/ajax.php?action=imdb_movie&imdb_movie=${imdb//t}" -b "$cookies" -s)
 
   # Updating infobar values with ajax_parser()
@@ -253,7 +254,7 @@ for x in "$@"; do
     if [[ "$movie_database" == *port.hu* ]]; then
       port_description=$(curl -s "$movie_database" | grep og:description | sed -r 's,>$, />,' | xmlstarlet sel -t -v '//meta/@content')
     else
-	  printf 'Scraping IMDb for title with id: \e[93m%s\e[0m\n' "$imdb"
+	  printf '%s\n' "Scraping IMDb for title."
       search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
       printf 'Scraping port.hu for link with title: \e[93m%s\e[0m\n' "$search_name_imdb"
       port_link=$(curl -s "https://port.hu/search/suggest-list?q=$search_name_imdb" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
