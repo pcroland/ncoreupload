@@ -30,9 +30,11 @@ curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" -
 * Az`~/.ncup/ncup.conf` fájlban beállítjuk a beállításokat
 
 script frissítése:
+
 `install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup && hash -r`
 
 config frissítése:
+
 `curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o ~/.ncup/ncup.conf -s`
 
 ## Használat
