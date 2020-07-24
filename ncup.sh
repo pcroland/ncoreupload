@@ -127,7 +127,7 @@ for x in "$@"; do
     if [[ "$torrent_program" == mktor ]]; then
       mktor "$x" http://bithumen.be:11337/announce -o "$torrent_file" &> /dev/null
     elif [[ $torrent_program == mktorrent ]]; then
-      mktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" &> /dev/null
+      mktorrent -p -l 24 -n "$torrent_file" "$x" &> /dev/null
     else
       printf '\e[91m%s\e[0m\n' "ERROR: unsupported torrent program." >&2
       exit 1
