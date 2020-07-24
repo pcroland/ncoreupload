@@ -20,11 +20,13 @@ ajax_parser() {
 # animation for torrent creation
 animation(){
   animation=('░▒▓█▓▒░ ' ' ░▒▓█▓▒░' '░ ░▒▓█▓▒' '▒░ ░▒▓█▓' '▓▒░ ░▒▓█' '█▓▒░ ░▒▓' '▓█▓▒░ ░▒' '▒▓█▓▒░ ░')
-  while true
-  do
-  printf '\n'
+  while true; do
     for i in "${animation[@]}"; do
-      printf '\rCreating torrent \e[93m%-8s\e[0m' "$i"
+      printf '\r'
+      if (( nfo_created )); then
+        printf 'Creating NFO. '
+      fi
+      printf 'Creating torrent \e[93m%-8s\e[0m' "$i"
       sleep 0.1
     done
   done
@@ -108,50 +110,56 @@ for x in "$@"; do
     printf '\e[91m%s\e[0m\n' "ERROR: multiple NFO files found." >&2
     exit 1
   fi
-  if [[ ! -f "$nfo_file" ]]; then
-    nfo_created=1
-    printf "Creating NFO. %s\n"
-	mediainfo "$x" > "$x"/"$torrent_name".nfo
-  fi
-  if [[ ! -f "$torrent_file" ]]; then
-    torrent_created=1
-    animation &
-    pid=$!
-    if [[ "$torrent_program" == mktor ]]; then
-      mktor "$x" http://bithumen.be:11337/announce -o "$torrent_file" &> /dev/null
-    elif [[ $torrent_program == mktorrent ]]; then
-      mktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" &> /dev/null
-    else
-      printf '\e[91m%s\e[0m\n' "ERROR: unsupported torrent program." >&2
-      exit 1
+  if [[ -f "$nfo_file" && -f "$torrent_file" ]]; then
+    printf 'Already has NFO and torrent file.\n'
+  else
+    if [[ ! -f "$nfo_file" ]]; then
+      nfo_created=1
+      printf "Creating NFO. "
+	  mediainfo "$x" > "$x"/"$torrent_name".nfo
     fi
-    kill -PIPE "$pid"
+    if [[ ! -f "$torrent_file" ]]; then
+      torrent_created=1
+      animation &
+      pid=$!
+      if [[ "$torrent_program" == mktor ]]; then
+        mktor "$x" http://bithumen.be:11337/announce -o "$torrent_file" &> /dev/null
+      elif [[ $torrent_program == mktorrent ]]; then
+        mktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" &> /dev/null
+      else
+        printf '\e[91m%s\e[0m\n' "ERROR: unsupported torrent program." >&2
+        exit 1
+      fi
+      kill -PIPE "$pid"
+	  printf '\n'
+    fi
+  if (( nfo_created && ! torrent_created )); then
+    printf '\n'
   fi
+  fi
+  torrent_created=0
+  nfo_created=0
 done
-if (( torrent_created || nfo_created )); then
-  printf '\n'
-  print_separator
-fi
+print_separator
 
 # Setting up the input files and the infobar values from infobar.txt.
 # The script will try to set values that are unset with multiple methods:
 # it will get "$imdb" and "$$movie_database" from the NFO file or scrape the sites,
 # "$hun_title" "$release_date" and other infobar values will be parsed from the site.
 for x in "$@"; do
-  printf '\e[92m%s\e[0m\n' "$torrent_name"
-
+  # Setting up torrent name, torrent file and NFO file. Print out torrent name.
+  torrent_name=$(basename "$x")
+  torrent_file="$torrent_name".torrent
+  nfo_file=("$x"/*.nfo)
   seasons=
   episodes=
+  printf '\e[92m%s\e[0m\n' "$torrent_name"
 
+  # Source from infobar if it exists.
   if [[ -f infobar.txt ]]; then
     # shellcheck disable=SC1091
     source infobar.txt
   fi
-
-  # Setting up torrent and NFO file.
-  torrent_name=$(basename "$x")
-  torrent_file="$torrent_name".torrent
-  nfo_file=("$x"/*.nfo)
 
   # Defining torrent category.
   if grep -qEi "\.hun(\.|\-)" <<< "$torrent_name"; then
@@ -286,7 +294,7 @@ for x in "$@"; do
   printf 'link.......: \e[93m%s\e[0m\n' "$movie_database"
   printf 'Uploading..: \e[93m%s\e[0m\n' "$type"
   # shellcheck disable=SC2128
-  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upload.php" \
+  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncorea.cc/upload.php" \
   -b "$cookies" \
   -F getUnique="$unique_id" \
   -F eredeti=igen \
