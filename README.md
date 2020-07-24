@@ -14,12 +14,12 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 * Ha nincs cookies.txt az `~/.ncup/` mappában, akkor login prompt jön elő. (Ha captcha-t dob az oldal nem fog működni)
 
 ## Szükséges programok
-* `ffmpeg`
-* `ffprobe`
-* `mktor`/`mktorrent` (configolható)
 * `curl`
 * `jq`
+* `ffmpeg`, `ffprobe` (ha a config fájlban `generate_images='true'` (default))
+* `mktor`/`mktorrent` (configolható (mktor a default))
 * `xmlstarlet` (ha a config fájlban `description='true'` van)
+* `mediainfo` (ha a feltölteni kívánt mappában nincs NFO fájl, a script létrehoz egyet)
 
 ## Telepítés
 ```sh
@@ -27,7 +27,7 @@ install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreu
 curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o ~/.ncup/ncup.conf -s
 ```
 * Ha a `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fájlunkba hogy: `PATH="$HOME/.local/bin:$PATH"`.
-* Az`~/.ncup/ncup.conf` fájlban beállítjuk a beállításokat
+* Az`~/.ncup/ncup.conf` fájlban beállítjuk a beállításokat.
 
 script frissítése:
 
