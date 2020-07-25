@@ -49,7 +49,6 @@ Example:
 EOF
 )
 
-
 if [[ "$#" -eq 0 ]]; then
   echo "$help" >&2
   exit 1
@@ -132,7 +131,7 @@ for x in "$@"; do
   torrent_name=$(basename "$x")
   torrent_file="$torrent_name".torrent
   nfo_files=("$x"/*.nfo)
-  nfo_file=${nfo_files[0]}
+  nfo_file="${nfo_files[0]}"
   printf '\e[92m%s\e[0m\n' "$torrent_name"
   if (( ${#nfo_files[@]} > 1 )); then
     printf '\e[91m%s\e[0m\n' "ERROR: multiple NFO files found." >&2
@@ -300,6 +299,12 @@ for x in "$@"; do
     printf 'Cast.......: \e[93m%s\e[0m\n' "$cast"
   fi
 
+  # Uploading torrent.
+  # shellcheck disable=SC2128
+  printf 'Category...: \e[93m%s\e[0m\n' "$type"
+  printf 'IMDB.......: \e[93mhttps://www.imdb.com/title/%s\e[0m\n' "$imdb"
+  printf 'link.......: \e[93m%s\e[0m\n' "$movie_database"
+
   # Grab description from port.hu
   # shellcheck disable=SC2154
   if [[ "$description" == true ]]; then
@@ -315,15 +320,11 @@ for x in "$@"; do
 	printf 'Description: \e[93m%.50s...\e[0m\n' "$port_description"
   fi
 
-  # Uploading torrent.
-  # shellcheck disable=SC2128
-  printf 'IMDB.......: \e[93mhttps://www.imdb.com/title/%s\e[0m\n' "$imdb"
-  printf 'link.......: \e[93m%s\e[0m\n' "$movie_database"
-  printf 'Uploading..: \e[93m%s\e[0m\n' "$type"
 
   if (( ! noupload )); then
+    printf 'Uploading. \n'
     # shellcheck disable=SC2128
-    torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upload.php" \
+    torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncorea.cc/upload.php" \
     -b "$cookies" \
     -F getUnique="$unique_id" \
     -F eredeti=igen \
