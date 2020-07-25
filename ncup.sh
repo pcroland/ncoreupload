@@ -54,6 +54,7 @@ updater() {
     diff --color=always -u "$script" "$tmp"
     mv "$tmp" > "$script"
   fi
+  rm -f "$tmp"
 }
 
 help=$(cat <<'EOF'
