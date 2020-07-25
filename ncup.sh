@@ -82,6 +82,7 @@ post_to_feed='false'
 EOF
 )
 
+# Show help if there's no arguments.
 if [[ "$#" -eq 0 ]]; then
   echo "$help" >&2
   exit 1
