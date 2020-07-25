@@ -83,7 +83,9 @@ while getopts ':hneuc' OPTION; do
     h) echo "$help"; exit 0;;
     n) noupload=1;;
     e) config_checker; "${EDITOR:-editor}" "$config"; exit 0;;
-    u) printf 'Updating script.\n'; install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup; exit 0;;
+    u) printf 'Updating script.\n'
+       install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup
+       exit 0;;
     c) printf '%s\n' "$default_config" > "$config"; exit 0;;
     *) echo "ERROR: Invalid option: -$OPTARG" >&2; exit 1;;
   esac
