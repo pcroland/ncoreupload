@@ -2,12 +2,14 @@
 
 # thumbnail generator
 imagegen() {
+  images=3
   seconds=$(ffprobe -i "$1" -show_format -v quiet | sed -n 's/duration=//p')
-  for i in {1..3}; do
-    interval=$(bc <<< "scale=4; $seconds/4")
+  interval=$(bc <<< "scale=4; $seconds/4")
+  for i in {1.."$images"}; do
     framepos=$(bc <<< "scale=4; $interval*$i")
     ffmpeg -y -loglevel panic -ss "$framepos" -i "$1" -vframes 1 "torrent_image_$i.png"
-    printf '\r\e[0mSaving thumbnails... %d%%' "$(bc <<< "$i*100/3")"
+    (( c++ ))
+    printf '\rImages: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
   done
   printf '\n'
 }
