@@ -95,7 +95,6 @@ else
   printf 'infobar.txt was not found.\n'
 fi
 print_separator
-#printf '\n'
 
 # Creating NFO file with mediainfo if it doesn't exist yet.
 # exit if there are multiple NFO files in the folder.
@@ -271,7 +270,7 @@ for x in "$@"; do
     printf 'Director...: \e[93m%s\e[0m\n' "$director"
     printf 'Cast.......: \e[93m%s\e[0m\n' "$cast"
   fi
-  
+
   # Grab description from port.hu
   # shellcheck disable=SC2154
   if [[ "$description" == true ]]; then
@@ -286,7 +285,7 @@ for x in "$@"; do
     fi
 	printf 'Description: \e[93m%.50s...\e[0m\n' "$port_description"
   fi
-  
+
   # Uploading torrent.
   # shellcheck disable=SC2128
   printf 'IMDB.......: \e[93mhttps://www.imdb.com/title/%s\e[0m\n' "$imdb"
