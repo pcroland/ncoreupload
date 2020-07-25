@@ -77,7 +77,7 @@ fi
 cookies=~/.ncup/cookies.txt
 config=~/.ncup/ncup.conf
 
-while getopts ':hne' OPTION; do
+while getopts ':hneuc' OPTION; do
   case "$OPTION" in
     h) echo "$help"; exit 0;;
     n) noupload=1;;
