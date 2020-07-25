@@ -36,6 +36,35 @@ print_separator() {
   printf '%.0s─' $(seq 1 "$(tput cols)")
 }
 
+help=$(cat <<'EOF'
+Usage:
+  ncup [input(s)]
+
+Options:
+  -h      Prints help.
+  -n      Skip uploading.
+
+Example:
+  ncup A.Dogs.Journey*prldm
+EOF
+)
+
+
+if [[ "$#" -eq 0 ]]; then
+  echo "$help" >&2
+  exit 1
+fi
+
+while getopts 'hn' OPTION; do
+  case "$OPTION" in
+    h) echo "$help"; return 0;;
+    n) noupload=1;;
+    *) echo "ERROR: Invalid option: -$OPTARG" >&2; return 1;;
+  esac
+done
+
+shift "$((OPTIND - 1))"
+
 cookies=~/.ncup/cookies.txt
 config=~/.ncup/ncup.conf
 if [[ ! -f "$config" ]]; then
@@ -71,7 +100,7 @@ source "$config"
 [[ -z "$print_infobar" ]] && print_infobar='false'
 [[ -z "$anonymous_upload" ]] && anonymous_upload='false'
 [[ -z "$description" ]] && description='false'
-
+[[ -z "$post_to_feed" ]] && post_to_feed='false'
 
 # Anonymous upload config.
 if [[ "$anonymous_upload" == true ]]; then
@@ -144,7 +173,7 @@ print_separator
 # Setting up the input files and the infobar values from infobar.txt.
 # The script will try to set values that are unset with multiple methods:
 # it will get "$imdb" and "$$movie_database" from the NFO file or scrape the sites,
-# "$hun_title" "$release_date" and other infobar values will be parsed from the site.
+# "hun_title" "release_date" and other infobar values will be parsed from the site.
 for x in "$@"; do
   # Setting up torrent name, torrent file and NFO file. Print out torrent name.
   torrent_name=$(basename "$x")
@@ -291,54 +320,58 @@ for x in "$@"; do
   printf 'IMDB.......: \e[93mhttps://www.imdb.com/title/%s\e[0m\n' "$imdb"
   printf 'link.......: \e[93m%s\e[0m\n' "$movie_database"
   printf 'Uploading..: \e[93m%s\e[0m\n' "$type"
-  # shellcheck disable=SC2128
-  torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upload.php" \
-  -b "$cookies" \
-  -F getUnique="$unique_id" \
-  -F eredeti=igen \
-  -F infobar_site=imdb \
-  -F tipus="$type" \
-  -F torrent_nev="$torrent_name" \
-  -F torrent_fajl=@"$torrent_file" \
-  -F nfo_fajl=@"$nfo_file" \
-  -F szoveg="$port_description" \
-  -F kep1="$torrent_image_1" \
-  -F kep2="$torrent_image_2" \
-  -F kep3="$torrent_image_3" \
-  -F imdb_id="$imdb" \
-  -F film_adatbazis="$movie_database" \
-  -F infobar_picture="$infobar_picture" \
-  -F infobar_rank="$infobar_rank" \
-  -F infobar_genres="$infobar_genres" \
-  -F megjelent="$release_date" \
-  -F orszag="$country" \
-  -F hossz="$runtime" \
-  -F film_magyar_cim="$hun_title" \
-  -F film_angol_cim="$eng_title" \
-  -F film_idegen_cim="$for_title" \
-  -F rendezo="$director" \
-  -F szereplok="$cast" \
-  -F szezon="$seasons" \
-  -F epizod_szamok="$episodes" \
-  -F keresre=nem \
-  -F anonymous="$anonymous" \
-  -F elrejt=nem \
-  -F mindent_tud1=szabalyzat \
-  -F mindent_tud3=seedeles)
 
-  # Downloading torrent from nCore.
-  # First curl gets the torrent id with passkey,
-  # the second one downloads the torrent.
-  printf 'Downloading: \e[93m%s\e[0m\n' "$torrent_link"
-  torrent_page=$(curl "$torrent_link" -b "$cookies" -s)
-  id_with_passkey=$(grep -m 1 -o -P '(?<=action\=download&id\=).*(?=\">)' <<< "$torrent_page")
-  curl "https://ncore.cc/torrents.php?action=download&id=$id_with_passkey" -b "$cookies" -s -o "${torrent_name}_nc.torrent"
+  if (( ! noupload )); then
+    # shellcheck disable=SC2128
+    torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upload.php" \
+    -b "$cookies" \
+    -F getUnique="$unique_id" \
+    -F eredeti=igen \
+    -F infobar_site=imdb \
+    -F tipus="$type" \
+    -F torrent_nev="$torrent_name" \
+    -F torrent_fajl=@"$torrent_file" \
+    -F nfo_fajl=@"$nfo_file" \
+    -F szoveg="$port_description" \
+    -F kep1="$torrent_image_1" \
+    -F kep2="$torrent_image_2" \
+    -F kep3="$torrent_image_3" \
+    -F imdb_id="$imdb" \
+    -F film_adatbazis="$movie_database" \
+    -F infobar_picture="$infobar_picture" \
+    -F infobar_rank="$infobar_rank" \
+    -F infobar_genres="$infobar_genres" \
+    -F megjelent="$release_date" \
+    -F orszag="$country" \
+    -F hossz="$runtime" \
+    -F film_magyar_cim="$hun_title" \
+    -F film_angol_cim="$eng_title" \
+    -F film_idegen_cim="$for_title" \
+    -F rendezo="$director" \
+    -F szereplok="$cast" \
+    -F szezon="$seasons" \
+    -F epizod_szamok="$episodes" \
+    -F keresre=nem \
+    -F anonymous="$anonymous" \
+    -F elrejt=nem \
+    -F mindent_tud1=szabalyzat \
+    -F mindent_tud3=seedeles)
 
-  # Posting to feed.
-  #printf "Posting to feed.\n"
-  #torrent_id=$(grep -m 1 -o -P '(?<=addnews\&id\=).*(?=\&getunique)' <<< "$torrent_page")
-  #curl https://ncore.cc/torrents.php?action=addnews&id="$torrent_id"&getunique="$unique_id" -b "$cookies" -s
+    # Downloading torrent from nCore.
+    # First curl gets the torrent id with passkey,
+    # the second one downloads the torrent.
+    printf 'Downloading: \e[93m%s\e[0m\n' "$torrent_link"
+    torrent_page=$(curl "$torrent_link" -b "$cookies" -s)
+    id_with_passkey=$(grep -m 1 -o -P '(?<=action\=download&id\=).*(?=\">)' <<< "$torrent_page")
+    curl "https://ncore.cc/torrents.php?action=download&id=$id_with_passkey" -b "$cookies" -s -o "${torrent_name}_nc.torrent"
 
+    # Posting to feed.
+    if [[ "$post_to_feed" == true ]]; then
+      printf "Posting to feed.\n"
+      torrent_id="${id_with_passkey%%&*}"
+      curl https://ncore.cc/torrents.php?action=addnews&id="$torrent_id"&getunique="$unique_id" -b "$cookies" -s
+    fi
+  fi
   # Drawing a separator after each torrent.
   (( t++ ))
   if (( t < $# )); then
