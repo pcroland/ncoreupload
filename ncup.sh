@@ -9,7 +9,7 @@ imagegen() {
     framepos=$(bc <<< "scale=4; $interval*$i")
     ffmpeg -y -loglevel panic -ss "$framepos" -i "$1" -vframes 1 "torrent_image_$i.png"
     (( c++ ))
-    printf '\rImages: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
+    printf '\rSaving images: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
   done
   printf '\n'
 }
