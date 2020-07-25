@@ -44,6 +44,19 @@ config_checker() {
   fi
 }
 
+updater() {
+  printf 'Updating script.\n'
+  tmp=$(mktemp "${TMPDIR:-/tmp}/ncup.XXXXXXXXXX")
+  curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh" -s -o "$tmp"
+  if diff -q "$script" "$tmp" >/dev/null; then
+    printf '\e[32mAlready up to date.\e[0m\n'
+    rm -f "$tmp"
+  else
+    diff --color=always -u "$script" "$tmp"
+    mv "$tmp" "$script"
+  fi
+}
+
 help=$(cat <<'EOF'
 Usage:
   ncup [input(s)]
@@ -70,6 +83,7 @@ post_to_feed='false'
 EOF
 )
 
+# Show help if there's no arguments.
 if [[ "$#" -eq 0 ]]; then
   echo "$help" >&2
   exit 1
@@ -77,15 +91,14 @@ fi
 
 cookies=~/.ncup/cookies.txt
 config=~/.ncup/ncup.conf
+script=~/.local/bin/ncup
 
 while getopts ':hneuc' OPTION; do
   case "$OPTION" in
     h) echo "$help"; exit 0;;
     n) noupload=1;;
     e) config_checker; "${EDITOR:-editor}" "$config"; exit 0;;
-    u) printf 'Updating script.\n'
-       install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup
-       exit 0;;
+    u) updater; exit 0;;
     c) printf '%s\n' "$default_config" > "$config"; exit 0;;
     *) echo "ERROR: Invalid option: -$OPTARG" >&2; exit 1;;
   esac
