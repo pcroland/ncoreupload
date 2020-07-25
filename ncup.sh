@@ -53,7 +53,7 @@ updater() {
     rm -f "$tmp"
   else
     diff --color=always -u "$script" "$tmp"
-    mv "$tmp" > "$script"
+    mv "$tmp" "$script"
   fi
 }
 
