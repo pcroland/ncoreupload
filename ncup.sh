@@ -108,6 +108,7 @@ shift "$((OPTIND - 1))"
 
 # Config setup.
 config_checker
+
 # shellcheck disable=SC1090
 source "$config"
 [[ -z "$torrent_program" ]] && torrent_program='mktor'
