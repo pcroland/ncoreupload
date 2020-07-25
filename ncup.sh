@@ -36,6 +36,13 @@ print_separator() {
   printf '%.0s─' $(seq 1 "$(tput cols)")
 }
 
+config_checker() {
+  if [[ ! -f "$config" ]]; then
+    printf 'Missing config, saving default in: \e[93m%s\e[0m\n' "$config"
+    printf '%s\n' "$default_config" > "$config"
+  fi
+}
+
 help=$(cat <<'EOF'
 Usage:
   ncup [input(s)]
@@ -43,9 +50,22 @@ Usage:
 Options:
   -h      Prints help.
   -n      Skip uploading.
+  -e      Config editor.
+  -u      Update script.
+  -c      Update config from the script.
 
 Example:
   ncup A.Dogs.Journey*prldm
+EOF
+)
+
+default_config=$(cat <<EOF
+torrent_program='mktor'
+generate_images='true'
+print_infobar='false'
+anonymous_upload='false'
+description='false'
+post_to_feed='false'
 EOF
 )
 
@@ -54,22 +74,31 @@ if [[ "$#" -eq 0 ]]; then
   exit 1
 fi
 
-while getopts 'hn' OPTION; do
+cookies=~/.ncup/cookies.txt
+config=~/.ncup/ncup.conf
+
+while getopts ':hne' OPTION; do
   case "$OPTION" in
-    h) echo "$help"; return 0;;
+    h) echo "$help"; exit 0;;
     n) noupload=1;;
-    *) echo "ERROR: Invalid option: -$OPTARG" >&2; return 1;;
+    e) config_checker; "${EDITOR:-editor}" "$config"; exit 0;;
+    u) printf 'Updating script.'; install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup; exit 0;;
+    c) printf '%s\n' "$default_config" > "$config"; exit 0;;
+    *) echo "ERROR: Invalid option: -$OPTARG" >&2; exit 1;;
   esac
 done
 
 shift "$((OPTIND - 1))"
 
-cookies=~/.ncup/cookies.txt
-config=~/.ncup/ncup.conf
-if [[ ! -f "$config" ]]; then
-  printf 'Missing config, downloading in: \e[93m%s\e[0m\n' "$config"
-  curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o "$config" -s
-fi
+# Config setup.
+config_checker
+source "$config"
+[[ -z "$torrent_program" ]] && torrent_program='mktor'
+[[ -z "$generate_images" ]] && generate_images='true'
+[[ -z "$print_infobar" ]] && print_infobar='false'
+[[ -z "$anonymous_upload" ]] && anonymous_upload='false'
+[[ -z "$description" ]] && description='false'
+[[ -z "$post_to_feed" ]] && post_to_feed='false'
 
 # Searching for cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
@@ -90,16 +119,6 @@ if [[ ! -f "$cookies" ]]; then
   fi
   print_separator
 fi
-
-# Config setup.
-# shellcheck disable=SC1090
-source "$config"
-[[ -z "$torrent_program" ]] && torrent_program='mktor'
-[[ -z "$generate_images" ]] && generate_images='true'
-[[ -z "$print_infobar" ]] && print_infobar='false'
-[[ -z "$anonymous_upload" ]] && anonymous_upload='false'
-[[ -z "$description" ]] && description='false'
-[[ -z "$post_to_feed" ]] && post_to_feed='false'
 
 # Anonymous upload config.
 if [[ "$anonymous_upload" == true ]]; then
@@ -322,7 +341,7 @@ for x in "$@"; do
 
 
   if (( ! noupload )); then
-    printf 'Uploading. \n'
+    printf "Uploading. "
     # shellcheck disable=SC2128
     torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncorea.cc/upload.php" \
     -b "$cookies" \
@@ -370,7 +389,7 @@ for x in "$@"; do
     if [[ "$post_to_feed" == true ]]; then
       printf "Posting to feed.\n"
       torrent_id="${id_with_passkey%%&*}"
-      curl https://ncore.cc/torrents.php?action=addnews&id="$torrent_id"&getunique="$unique_id" -b "$cookies" -s
+      curl "https://ncore.cc/torrents.php?action=addnews&id=$torrent_id&getunique=$unique_id" -b "$cookies" -s
     fi
   fi
   # Drawing a separator after each torrent.
