@@ -50,11 +50,11 @@ updater() {
   curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh" -s -o "$tmp"
   if diff -q "$script" "$tmp" >/dev/null; then
     printf '\e[32mAlready up to date.\e[0m\n'
+    rm -f "$tmp"
   else
     diff --color=always -u "$script" "$tmp"
     mv "$tmp" > "$script"
   fi
-  rm -f "$tmp"
 }
 
 help=$(cat <<'EOF'
