@@ -31,16 +31,19 @@ curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" -
 
 script frissítése:
 
-`install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup && hash -r`
+`ncup -u`
 
 config frissítése:
 
-`curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o ~/.ncup/ncup.conf -s`
+`ncup -c`
 
 ## Használat
 ```sh
 ncup [input(s)]
 ```
+Help:
+
+`ncup -h`
 Példák:
 
 `ncup A.Dogs.Journey.2019.BDRip.x264.HuN-prldm`
