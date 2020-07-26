@@ -104,6 +104,7 @@ while getopts ':hneuc' OPTION; do
   esac
 done
 
+
 shift "$((OPTIND - 1))"
 
 # Config setup.
