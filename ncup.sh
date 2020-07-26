@@ -37,10 +37,6 @@ print_separator() {
   printf '%.0s─' $(seq 1 "$(tput cols)")
 }
 
-print_separator() {
-  printf '%.0s─' $(seq 1 "$(tput cols)")
-}
-
 config_checker() {
   if [[ ! -f "$config" ]]; then
     printf 'Missing config, saving default in: \e[93m%s\e[0m\n' "$config"
