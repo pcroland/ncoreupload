@@ -17,7 +17,7 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 * `curl`
 * `jq`
 * `ffmpeg`, `ffprobe` (ha a config fájlban `generate_images='true'` (default))
-* `mktor`/`mktorrent` (configolható (mktor a default))
+* `mktorrent`/`mktor` (configolható (mktorrent a default))
 * `xmlstarlet` (ha a config fájlban `description='true'` van)
 * `mediainfo` (ha a feltölteni kívánt mappában nincs NFO fájl, a script létrehoz egyet)
 

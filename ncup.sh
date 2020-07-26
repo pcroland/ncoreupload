@@ -74,7 +74,7 @@ EOF
 )
 
 default_config=$(cat <<EOF
-torrent_program='mktor'
+torrent_program='mktorrent'
 generate_images='true'
 print_infobar='false'
 anonymous_upload='false'
@@ -111,7 +111,7 @@ config_checker
 
 # shellcheck disable=SC1090
 source "$config"
-[[ -z "$torrent_program" ]] && torrent_program='mktor'
+[[ -z "$torrent_program" ]] && torrent_program='mktorrent'
 [[ -z "$generate_images" ]] && generate_images='true'
 [[ -z "$print_infobar" ]] && print_infobar='false'
 [[ -z "$anonymous_upload" ]] && anonymous_upload='false'
@@ -186,10 +186,10 @@ for x in "$@"; do
       torrent_created=1
       animation &
       pid=$!
-      if [[ "$torrent_program" == mktor ]]; then
-        mktor "$x" http://bithumen.be:11337/announce -o "$torrent_file" &> /dev/null
-      elif [[ $torrent_program == mktorrent ]]; then
+      if [[ $torrent_program == mktorrent ]]; then
         mktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" &> /dev/null
+      elif [[ "$torrent_program" == mktor ]]; then
+        mktor "$x" http://bithumen.be:11337/announce -o "$torrent_file" &> /dev/null
       else
         printf '\e[91m%s\e[0m\n' "ERROR: unsupported torrent program." >&2
         exit 1
