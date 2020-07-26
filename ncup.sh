@@ -151,7 +151,6 @@ source "$config"
 
 # Infobar setup
 infobar_checker
-source "$infobar"
 
 # Searching for cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
@@ -245,6 +244,7 @@ for x in "$@"; do
   nfo_file=("$x"/*.nfo)
   seasons=
   episodes=
+  source "$infobar"
   printf '\e[92m%s\e[0m\n' "$torrent_name"
 
   # Defining torrent category.
@@ -437,6 +437,7 @@ for x in "$@"; do
   if (( t < $# )); then
     print_separator
   fi
+  unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres country runtime director cast seasons episodes
 done
 
 # Deleting thumbnails.
