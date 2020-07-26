@@ -137,10 +137,11 @@ done
 
 shift "$((OPTIND - 1))"
 
-# Config and infobar check and setup.
+# Config and infobar check.
 config_checker
 infobar_checker
 
+# Update config values if something is missing (old config).
 # shellcheck disable=SC1090
 source "$config"
 [[ -z "$torrent_program" ]] && torrent_program='mktorrent'
