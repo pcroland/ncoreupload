@@ -44,6 +44,13 @@ config_checker() {
   fi
 }
 
+infobar_checker() {
+  if [[ ! -f "$infobar" ]]; then
+    printf 'Missing infobar, saving default in: \e[93m%s\e[0m\n' "$infobar"
+    printf '%s\n' "$default_infobar" > "$infobar"
+  fi
+}
+
 updater() {
   printf 'Updating script.\n'
   tmp=$(mktemp "${TMPDIR:-/tmp}/ncup.XXXXXXXXXX")
@@ -64,9 +71,11 @@ Usage:
 Options:
   -h      Prints help.
   -n      Skip uploading.
-  -e      Config editor.
   -u      Update script.
-  -c      Update config from the script.
+  -c      Config editor.
+  -i      Infobar editor.
+  -d      Update config from the script.
+  -e      Update infobar from the script.
 
 Example:
   ncup A.Dogs.Journey*prldm
@@ -83,6 +92,25 @@ post_to_feed='false'
 EOF
 )
 
+default_infobar=$(cat <<EOF
+imdb=
+movie_database=
+hun_title=
+eng_title=
+for_title=
+release_date=
+infobar_picture=
+infobar_rank=
+infobar_genres=
+country=
+runtime=
+director=
+cast=
+seasons=
+episodes=
+EOF
+)
+
 # Show help if there's no arguments.
 if [[ "$#" -eq 0 ]]; then
   echo "$help" >&2
@@ -91,15 +119,18 @@ fi
 
 cookies=~/.ncup/cookies.txt
 config=~/.ncup/ncup.conf
+infobar=~/.ncup/infobar.txt
 script=~/.local/bin/ncup
 
-while getopts ':hneuc' OPTION; do
+while getopts ':hnucide' OPTION; do
   case "$OPTION" in
     h) echo "$help"; exit 0;;
     n) noupload=1;;
-    e) config_checker; "${EDITOR:-editor}" "$config"; exit 0;;
     u) updater; exit 0;;
-    c) printf '%s\n' "$default_config" > "$config"; exit 0;;
+    c) config_checker; sleep 2; "${EDITOR:-editor}" "$config"; exit 0;;
+    i) infobar_checker; sleep 2; "${EDITOR:-editor}" "$infobar"; exit 0;;
+    d) printf '%s\n' "$default_config" > "$config"; exit 0;;
+    e) printf '%s\n' "$default_infobar" > "$infobar"; exit 0;;
     *) echo "ERROR: Invalid option: -$OPTARG" >&2; exit 1;;
   esac
 done
@@ -117,6 +148,10 @@ source "$config"
 [[ -z "$anonymous_upload" ]] && anonymous_upload='false'
 [[ -z "$description" ]] && description='false'
 [[ -z "$post_to_feed" ]] && post_to_feed='false'
+
+# Infobar setup
+infobar_checker
+source "$infobar"
 
 # Searching for cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
@@ -218,12 +253,6 @@ for x in "$@"; do
   seasons=
   episodes=
   printf '\e[92m%s\e[0m\n' "$torrent_name"
-
-  # Source from infobar if it exists.
-  if [[ -f infobar.txt ]]; then
-    # shellcheck disable=SC1091
-    source infobar.txt
-  fi
 
   # Defining torrent category.
   if grep -qEi "\.hun(\.|\-)" <<< "$torrent_name"; then
@@ -415,9 +444,6 @@ for x in "$@"; do
   if (( t < $# )); then
     print_separator
   fi
-
-  # Unset infobar values.
-  unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres country runtime director cast seasons episodes
 done
 
 # Deleting thumbnails.
