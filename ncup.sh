@@ -41,6 +41,7 @@ config_checker() {
   if [[ ! -f "$config" ]]; then
     printf 'Missing config, saving default in: \e[93m%s\e[0m\n' "$config"
     printf '%s\n' "$default_config" > "$config"
+    config_created=1
   fi
 }
 
@@ -48,6 +49,7 @@ infobar_checker() {
   if [[ ! -f "$infobar" ]]; then
     printf 'Missing infobar, saving default in: \e[93m%s\e[0m\n' "$infobar"
     printf '%s\n' "$default_infobar" > "$infobar"
+    infobar_created=1
   fi
 }
 
@@ -127,8 +129,14 @@ while getopts ':hnucide' OPTION; do
     h) echo "$help"; exit 0;;
     n) noupload=1;;
     u) updater; exit 0;;
-    c) config_checker; sleep 2; "${EDITOR:-editor}" "$config"; exit 0;;
-    i) infobar_checker; sleep 2; "${EDITOR:-editor}" "$infobar"; exit 0;;
+    c) config_checker
+       (( config_created )) && sleep 2
+       "${EDITOR:-editor}" "$config"
+       exit 0;;
+    i) infobar_checker
+       (( infobar_created )) && sleep 2
+       "${EDITOR:-editor}" "$infobar"
+       exit 0;;
     d) printf '%s\n' "$default_config" > "$config"; exit 0;;
     e) printf '%s\n' "$default_infobar" > "$infobar"; exit 0;;
     *) echo "ERROR: Invalid option: -$OPTARG" >&2; exit 1;;
