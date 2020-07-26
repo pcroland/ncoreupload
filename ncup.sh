@@ -137,8 +137,9 @@ done
 
 shift "$((OPTIND - 1))"
 
-# Config setup.
+# Config and infobar check and setup.
 config_checker
+infobar_checker
 
 # shellcheck disable=SC1090
 source "$config"
@@ -148,9 +149,6 @@ source "$config"
 [[ -z "$anonymous_upload" ]] && anonymous_upload='false'
 [[ -z "$description" ]] && description='false'
 [[ -z "$post_to_feed" ]] && post_to_feed='false'
-
-# Infobar setup
-infobar_checker
 
 # Searching for cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
@@ -244,6 +242,7 @@ for x in "$@"; do
   nfo_file=("$x"/*.nfo)
   seasons=
   episodes=
+  # shellcheck disable=SC1090
   source "$infobar"
   printf '\e[92m%s\e[0m\n' "$torrent_name"
 
