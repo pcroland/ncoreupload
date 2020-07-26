@@ -187,13 +187,6 @@ fi
 printf "Grabbing getUnique id: "
 unique_id=$(curl https://ncore.cc -b "$cookies" -s | grep -o -P '(?<=exit.php\?q=).*(?=" id="menu_11")')
 printf '%s\n' "$unique_id"
-
-# Check for infobar.txt
-if [[ -f infobar.txt ]]; then
-  printf 'infobar.txt was found.\n'
-else
-  printf 'infobar.txt was not found.\n'
-fi
 print_separator
 
 # Creating NFO file with mediainfo if it doesn't exist yet.
