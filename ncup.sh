@@ -137,8 +137,12 @@ while getopts ':hnucide' OPTION; do
        (( infobar_created )) && sleep 2
        "${EDITOR:-editor}" "$infobar"
        exit 0;;
-    d) printf '%s\n' "$default_config" > "$config"; exit 0;;
-    e) printf '%s\n' "$default_infobar" > "$infobar"; exit 0;;
+    d) printf '%s\n' "$default_config" > "$config"
+       printf 'Copied default config in: %s\n' "$config"
+       exit 0;;
+    e) printf '%s\n' "$default_infobar" > "$infobar"
+       printf 'Copied default infobar in: %s\n' "$infobar"
+       exit 0;;
     *) echo "ERROR: Invalid option: -$OPTARG" >&2; exit 1;;
   esac
 done
