@@ -199,15 +199,19 @@ unique_id=$(curl https://ncore.cc -b "$cookies" -s | grep -o -P '(?<=exit.php\?q
 printf '%s\n' "$unique_id"
 print_separator
 
-# Creating NFO file with mediainfo if it doesn't exist yet.
-# exit if there are multiple NFO files in the folder.
-# Creating torrent file if it doesn't exist yet.
+# Creating NFO and torrent file if something is missing.
+# Exit if there are multiple NFO files or no video files in the folder.
 for x in "$@"; do
   torrent_name=$(basename "$x")
   torrent_file="$torrent_name".torrent
   nfo_files=("$x"/*.nfo)
   nfo_file="${nfo_files[0]}"
   printf '\e[92m%s\e[0m\n' "$torrent_name"
+  file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | head -n 1)
+  if [[ ! -f "$file" ]]; then
+    printf '\e[91m%s\e[0m\n' "ERROR: no video files found."
+    exit 1
+  fi
   if (( ${#nfo_files[@]} > 1 )); then
     printf '\e[91m%s\e[0m\n' "ERROR: multiple NFO files found." >&2
     exit 1
@@ -218,7 +222,7 @@ for x in "$@"; do
     if [[ ! -f "$nfo_file" ]]; then
       nfo_created=1
       printf "Creating NFO. "
-	  mediainfo "$x" > "$x"/"$torrent_name".nfo
+      mediainfo "$x" > "$x"/"$torrent_name".nfo
     fi
     if [[ ! -f "$torrent_file" ]]; then
       torrent_created=1
@@ -290,12 +294,10 @@ for x in "$@"; do
     fi
   fi
 
-  # Generating thumbnail images from the first mkv/mp4/avi file if there's one.
+  # Generating thumbnail images.
   if [[ "$generate_images" == true ]]; then
     file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | head -n 1)
-    if [[ -f "$file" ]]; then
-      imagegen "$file"
-    fi
+    imagegen "$file"
   fi
 
   # Setting IMDb id from NFO file if it's not set manually in infobar.txt,
