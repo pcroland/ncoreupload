@@ -3,11 +3,11 @@
 # image generator
 imagegen() {
   images=3
-  seconds=$(ffprobe -i "$1" -show_format -v quiet | sed -n 's/duration=//p')
+  seconds=$(ffprobe "$1" -v quiet -print_format json -show_format | jq -r '.format.duration')
   interval=$(bc <<< "scale=4; $seconds/($images+1)")
   for i in {1..3}; do
     framepos=$(bc <<< "scale=4; $interval*$i")
-    ffmpeg -y -loglevel panic -ss "$framepos" -i "$1" -vframes 1 "torrent_image_$i.png"
+    ffmpeg -y -v quiet -ss "$framepos" -i "$1" -frames:v 1 "torrent_image_$i.png"
     printf '\rSaving images: [%d/%d] %03d%%' "$i" "$images" "$(bc <<< "$i*100/3")"
   done
   printf '\n'
