@@ -384,17 +384,17 @@ for x in "$@"; do
   # shellcheck disable=SC2154
   if [[ "$description" == true ]]; then
     if [[ "$movie_database" == *port.hu* ]]; then
-      port_description=$(curl -s "$movie_database" | grep og:description | sed -r 's,>$, />,' | xmlstarlet sel -t -v '//meta/@content')
+      port_link="$movie_database"
     else
-	  printf '%s\n' "Scraping IMDb for title."
+      printf '%s\n' "Scraping IMDb for title."
       search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
       printf 'Scraping port.hu for link with title: \e[93m%s\e[0m\n' "$search_name_imdb"
       port_link=$(curl -s "https://port.hu/search/suggest-list?q=$search_name_imdb" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
-      port_description=$(curl -s "$port_link" | grep og:description | sed -r 's,>$, />,' | xmlstarlet sel -t -v '//meta/@content')
     fi
-	printf 'Description: \e[93m%.50s...\e[0m\n' "$port_description"
+    port_description=$(curl -s "$port_link" | tr '\n' ' ' | grep -o -P '(?<=og:description" content=").*(?="> <meta property="title")')
+    #port_description=$(curl -s "$port_link" | tr '\n' ' ' | grep -o -P '(?<=og:description" content=").*(?="> <meta property="title")')
+    printf 'Description: \e[93m%.50s...\e[0m\n' "$port_description"
   fi
-
 
   if (( ! noupload )); then
     printf "Uploading. "
