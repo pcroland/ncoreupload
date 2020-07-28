@@ -391,7 +391,7 @@ for x in "$@"; do
       printf 'Scraping port.hu for link with title: \e[93m%s\e[0m\n' "$search_name_imdb"
       port_link=$(curl -s "https://port.hu/search/suggest-list?q=$search_name_imdb" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
     fi
-    port_description=$(curl -s "$port_link" | grep -oPz '(?s)<[^>]+og:description[^>]+>' | sed -r 's,>,/>,' | xmlstarlet sel -t -v '//meta/@content')
+    port_description=$(curl -s "$port_link" | grep -A1 'application/ld+json' | xmlstarlet sel -t -v '//script/text()' | jq -r '.description')
     printf 'Description: \e[93m%.50s...\e[0m\n' "$port_description"
   fi
 
