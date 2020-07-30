@@ -298,7 +298,7 @@ for x in "$@"; do
 
   # Generating thumbnail images.
   if [[ "$generate_images" == true ]]; then
-    file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | head -n 1)
+    file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | sort | head -n 1)
     imagegen "$file"
   fi
 
