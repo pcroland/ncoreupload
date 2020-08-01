@@ -23,7 +23,7 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 
 (Ha a `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fájlunkba hogy: `PATH="$HOME/.local/bin:$PATH"`.)
 * `hash -r && ncup -d && ncup -e`
-* A `cookies.txt` fájlt az ~/.ncup mappába másoljuk.
+* A `cookies.txt` fájlt az `~/.ncup` mappába másoljuk.
 * `ncup -e` paranccsal tudjuk szerkeszteni a config fájlunkat.
 ## Használat
 ```sh
