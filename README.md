@@ -10,20 +10,21 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 * infobar.txt-ben manuálisan is meg lehet adni az infobar értékeket.
 * A script az `~/.ncup/` mappában tárolja a cookies és config fájlt.
 * Letölti a config fájlt, ha még nincs.
-* Ha nincs cookies.txt az `~/.ncup/` mappában, akkor login prompt jön elő. (Ha captcha-t dob az oldal nem fog működni)
+* Ha nincs cookies.txt az `~/.ncup/` mappában, akkor login prompt jön elő. (2FA-s és captcha-s login nem fog működni.)
 ## Szükséges programok
 * `curl`
 * `jq`
 * `ffmpeg`, `ffprobe` (ha a config fájlban `generate_images='true'` (default))
-* `mktor`/`mktorrent` (configolható (mktor a default))
+* `mktorrent`/`mktor` (configolható (mktorrent a default))
 * `xmlstarlet` (ha a config fájlban `description='true'` van)
 * `mediainfo` (ha a feltölteni kívánt mappában nincs NFO fájl, a script létrehoz egyet)
 ## Telepítés
-```sh
-install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup && hash -r
-```
-* Ha a `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fájlunkba hogy: `PATH="$HOME/.local/bin:$PATH"`.
-* `ncup -e` paranccsal szerkesztjük a config fájlunkat. (Ha még nincs, a scriptből kimenti a defaultot.)
+* `install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup`
+
+(Ha a `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fájlunkba hogy: `PATH="$HOME/.local/bin:$PATH"`.)
+* `hash -r && ncup -d && ncup -e`
+* A `cookies.txt` fájlt az `~/.ncup` mappába másoljuk.
+* `ncup -e` paranccsal tudjuk szerkeszteni a config fájlunkat.
 ## Használat
 ```sh
 ncup [input(s)]
