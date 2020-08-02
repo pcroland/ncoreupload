@@ -329,10 +329,12 @@ for x in "$@"; do
     movie_database=$(grep -Eo "(http|https)://[a-zA-Z0-9./?=_%:-]*" "$nfo_file" | grep 'tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' | head -1)
   fi
   if [[ -z "$movie_database" ]]; then
-    printf 'Scraping IMDb for title.\n'
+    printf 'Scraping IMDb for title: '
     search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
-    printf 'Scraping port.hu for link with title: \e[93m%s\e[0m\n' "$search_name_imdb"
+    printf '\e[93m%s\e[0m\n' "$search_name_imdb"
+    printf 'Scraping port.hu for link: '
     movie_database=$(curl -s "https://port.hu/search/suggest-list?q=$search_name_imdb" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
+    printf '\e[93m%s\e[0m\n' "$movie_database"
   fi
 
   # Grabbing infobar page.
@@ -386,13 +388,15 @@ for x in "$@"; do
     if [[ "$movie_database" == *port.hu* ]]; then
       port_link="$movie_database"
     else
-      printf '%s\n' "Scraping IMDb for title."
+      printf 'Scraping IMDb for title: '
       search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
-      printf 'Scraping port.hu for link with title: \e[93m%s\e[0m\n' "$search_name_imdb"
+      printf '\e[93m%s\e[0m\n' "$search_name_imdb"
+      printf 'Scraping port.hu for link: '
       port_link=$(curl -s "https://port.hu/search/suggest-list?q=$search_name_imdb" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
+      printf '\e[93m%s\e[0m\n' "$port_link"
     fi
     port_description=$(curl -s "$port_link" | grep -A1 'application/ld+json' | xmlstarlet sel -t -v '//script/text()' | jq -r '.description')
-    printf 'Description: \e[93m%.50s...\e[0m\n' "$port_description"
+    printf 'Description: \e[93m%.150s...\e[0m\n' "$port_description"
   fi
 
   if (( ! noupload )); then
