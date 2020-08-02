@@ -439,7 +439,7 @@ for x in "$@"; do
     # Downloading torrent from nCore.
     # First curl gets the torrent id with passkey,
     # the second one downloads the torrent.
-    printf 'Downloading: \e[93m%s\e[0m\n' "$torrent_link"
+    printf 'Downloading: \e[93mhttps://ncore.cc/t/%s\e[0m\n' "${torrent_link//[!0-9]/}"
     torrent_page=$(curl "$torrent_link" -b "$cookies" -s)
     id_with_passkey=$(grep -m 1 -o -P '(?<=action\=download&id\=).*(?=\">)' <<< "$torrent_page")
     curl "https://ncore.cc/torrents.php?action=download&id=$id_with_passkey" -b "$cookies" -s -o "${torrent_name}_nc.torrent"
