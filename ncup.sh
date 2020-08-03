@@ -306,7 +306,7 @@ for x in "$@"; do
   # if that fails it will scrape imdb.com for an id based on the torrent name.
   if [[ -z "$imdb" ]]; then
     # shellcheck disable=SC2128
-    imdb=$(grep -Po '(tt[[:digit:]]*)(?=/)' "$nfo_file")
+    imdb=$(grep -Poa '(tt[[:digit:]]*)(?=/)' "$nfo_file")
   fi
   if [[ -z "$imdb" ]]; then
     printf "Scraping imdb.com for id: "
