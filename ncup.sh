@@ -79,7 +79,7 @@ login() {
   if [[ $(curl -s -I -b "$cookies" 'https://ncore.cc/' -o /dev/null -w '%{http_code}') == 200 ]]; then
     printf '\e[92m%s\e[0m\n' "Successful login."
   else
-    printf '\e[91m%s\e[0m\n' "ERROR: Login failed." >&2
+    printf '\e[91m%s\e[0m\n' "ERROR: Login failed, wrong password/2FA or maybe a captcha appeared." >&2
     rm -f "$cookies"
     exit 1
   fi
