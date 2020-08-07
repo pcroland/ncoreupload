@@ -68,6 +68,23 @@ updater() {
   rm -f "$tmp"
 }
 
+login() {
+  read -r -p 'username...: ' username
+  read -r -s -p 'password...: ' password
+  printf '\n'
+  read -r -p '2factor....: ' twofactor
+  curl 'https://ncore.cc/login.php?2fa' -c "$cookies" -s -d "submitted=1" \
+  --data-urlencode "nev=$username" --data-urlencode "pass=$password" \
+  --data-urlencode "2factor=$twofactor" -d "ne_leptessen_ki=1"
+  if [[ $(curl -s -I -b "$cookies" 'https://ncore.cc/' -o /dev/null -w '%{http_code}') == 200 ]]; then
+    printf '\e[92m%s\e[0m\n' "Successful login."
+  else
+    printf '\e[91m%s\e[0m\n' "ERROR: Login failed." >&2
+    rm -f "$cookies"
+    exit 1
+  fi
+}
+
 help=$(cat <<'EOF'
 Usage:
   ncup [input(s)]
@@ -168,21 +185,17 @@ source "$config"
 # Searching for cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
 # If login fails exit.
-if [[ ! -f "$cookies" ]]; then
-  printf '\e[91m%s\e[0m\n' "cookies.txt not found, login: "
-  read -r -p 'username: ' username
-  read -r -s -p 'password: ' password
-  printf '\n'
-  mkdir -p "$(dirname "$cookies")"
-  curl 'https://ncore.cc/login.php' -c "$cookies" -s -d "submitted=1" --data-urlencode "nev=$username" --data-urlencode "pass=$password" -d "ne_leptessen_ki=1"
+if [[ -f "$cookies" ]]; then
   if [[ $(curl -s -I -b "$cookies" 'https://ncore.cc/' -o /dev/null -w '%{http_code}') == 200 ]]; then
     printf '\e[92m%s\e[0m\n' "Cookies OK."
   else
-    printf '\e[91m%s\e[0m\n' "ERROR: login failed." >&2
-    rm -f "$cookies"
-    exit 1
+    printf '\e[91m%s\e[0m\n' "ERROR: cookies.txt does not work, login: "
+    login
   fi
-  print_separator
+else
+  mkdir -p "$(dirname "$cookies")"
+  printf '\e[91m%s\e[0m\n' "ERROR: cookies.txt is missing, login: "
+  login
 fi
 
 # Anonymous upload config.
@@ -191,14 +204,14 @@ if [[ "$anonymous_upload" == true ]]; then
 elif [[ "$anonymous_upload" == false ]]; then
   anonymous='nem'
 else
-  printf '\e[91m%s\e[0m\n' "ERROR: unsupported anonymous value." >&2
+  printf '\e[91m%s\e[0m\n' "ERROR: Unsupported anonymous value." >&2
   exit 1
 fi
 
 # Grabbing the getUnique id.
 printf "Grabbing getUnique id: "
 unique_id=$(curl https://ncore.cc -b "$cookies" -s | grep -o -P '(?<=exit.php\?q=).*(?=" id="menu_11")')
-printf '%s\n' "$unique_id"
+printf '\e[93m%.15s...\e[0m\n' "$unique_id"
 print_separator
 
 # Creating NFO and torrent file if something is missing.
@@ -211,11 +224,11 @@ for x in "$@"; do
   printf '\e[92m%s\e[0m\n' "$torrent_name"
   file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | head -n 1)
   if [[ ! -f "$file" ]]; then
-    printf '\e[91m%s\e[0m\n' "ERROR: no video files found."
+    printf '\e[91m%s\e[0m\n' "ERROR: No video files were found."
     exit 1
   fi
   if (( ${#nfo_files[@]} > 1 )); then
-    printf '\e[91m%s\e[0m\n' "ERROR: multiple NFO files found." >&2
+    printf '\e[91m%s\e[0m\n' "ERROR: Multiple NFO files were found." >&2
     exit 1
   fi
   if [[ -f "$nfo_file" && -f "$torrent_file" ]]; then
@@ -235,7 +248,7 @@ for x in "$@"; do
       elif [[ "$torrent_program" == mktor ]]; then
         mktor "$x" http://bithumen.be:11337/announce -o "$torrent_file" &> /dev/null
       else
-        printf '\e[91m%s\e[0m\n' "ERROR: unsupported torrent program." >&2
+        printf '\e[91m%s\e[0m\n' "ERROR: Unsupported torrent program." >&2
         exit 1
       fi
       kill -PIPE "$pid"
@@ -394,6 +407,10 @@ for x in "$@"; do
       printf 'Scraping port.hu for link: '
       port_link=$(curl -s "https://port.hu/search/suggest-list?q=$search_name_imdb" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
       printf '\e[93m%s\e[0m\n' "$port_link"
+      if [[ -z "$port_link" ]]; then
+        printf '\e[91m%s\e[0m\n' "ERROR: port.hu scraping failed."
+        read -r -p 'port.hu link: ' port_link
+      fi
     fi
     port_description=$(curl -s "$port_link" | grep -A1 'application/ld+json' | xmlstarlet sel -t -v '//script/text()' | jq -r '.description')
     printf 'Description: \e[93m%.150s...\e[0m\n' "$port_description"
