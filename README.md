@@ -19,7 +19,7 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 * `xmlstarlet` (ha a config fájlban `description='true'` van)
 * `mediainfo` (ha a feltölteni kívánt mappában nincs NFO fájl, a script létrehoz egyet)
 ## Telepítés
-* `install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup`
+* `install -D -m 755 <(curl -fsSL git.io/JJ94i) ~/.local/bin/ncup`
 
 (Ha a `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fájlunkba hogy: `PATH="$HOME/.local/bin:$PATH"`.)
 * `hash -r && ncup -d && ncup -e`
