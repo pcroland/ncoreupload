@@ -47,4 +47,4 @@ Példák:
 -e      Update infobar from the script.
 ```
 ## Működés közben
-![image1](https://i.kek.sh/ZvFWJUOhAU8.gif)
+![image1](https://i.kek.sh/4tcO09H0PPB.gif)
