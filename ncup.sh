@@ -413,7 +413,7 @@ for x in "$@"; do
       fi
     fi
     port_description=$(curl -s "$port_link" | grep -A1 'application/ld+json' | xmlstarlet sel -t -v '//script/text()' | jq -r '.description')
-    printf 'Description: \e[93m%.150s...\e[0m\n' "$port_description"
+    printf 'Description: \e[93m%.'$(($(tput cols)-16))'s...\e[0m\n' "$port_description"
   fi
 
   if (( ! noupload )); then
