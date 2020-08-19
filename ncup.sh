@@ -1,5 +1,6 @@
 #!/bin/bash
-
+LC_ALL=C.UTF-8
+LANG=C.UTF-8
 # image generator
 imagegen() {
   images=3
@@ -413,7 +414,7 @@ for x in "$@"; do
       fi
     fi
     port_description=$(curl -s "$port_link" | grep -A1 'application/ld+json' | xmlstarlet sel -t -v '//script/text()' | jq -r '.description')
-    printf 'Description: \e[93m%.'$(($(tput cols)-16))'s...\e[0m\n' "$port_description"
+    printf 'Description: \e[93m%s...\e[0m\n' "${port_description:0:$(($(tput cols)-16))}"
   fi
 
   if (( ! noupload )); then
