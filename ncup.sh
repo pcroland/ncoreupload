@@ -415,7 +415,7 @@ for x in "$@"; do
         read -r -p 'port.hu link: ' port_link
       fi
     fi
-    port_description=$(curl -s "$port_link" | grep -A1 'application/ld+json' | xmlstarlet sel -t -v '//script/text()' | jq -r '.description')
+    port_description=$(curl -s "$port_link" | grep -A1 'application/ld+json' | xmlstarlet sel -t -v '//script/text()' | jq -r '.description // empty')
     printf 'Description: \e[93m%s...\e[0m\n' "${port_description:0:$(($(tput cols)-16))}"
   fi
 
