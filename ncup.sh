@@ -283,7 +283,7 @@ for x in "$@"; do
 
   # Defining torrent category.
   if grep -qEi "\.hun(\.|\-)" <<< "$torrent_name"; then
-    if grep -qE "(720p|1080p|2160p|4320p)" <<< "$torrent_name"; then
+    if grep -qE "(720|1080|2160|4320)(p|i)" <<< "$torrent_name"; then
       if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
         type=hdser_hun
       else
@@ -297,7 +297,7 @@ for x in "$@"; do
       fi
     fi
   else
-    if grep -qE "(720p|1080p|2160p|4320p)" <<< "$torrent_name"; then
+    if grep -qE "(720|1080|2160|4320)(p|i)" <<< "$torrent_name"; then
       if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
         type=hdser
       else
