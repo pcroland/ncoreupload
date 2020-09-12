@@ -1,17 +1,23 @@
 #!/bin/bash
 LC_ALL=C.UTF-8
 LANG=C.UTF-8
+
 # image generator
 imagegen() {
-  images=3
+  images=8
   seconds=$(ffprobe "$1" -v quiet -print_format json -show_format | jq -r '.format.duration')
   interval=$(bc <<< "scale=4; $seconds/($images+1)")
-  for i in {1..3}; do
+  for i in {1..8}; do
     framepos=$(bc <<< "scale=4; $interval*$i")
-    ffmpeg -y -v quiet -ss "$framepos" -i "$1" -frames:v 1 "torrent_image_$i.png"
-    printf '\rSaving images: [%d/%d] %03d%%' "$i" "$images" "$(bc <<< "$i*100/3")"
+    ffmpeg -y -v quiet -ss "$framepos" -i "$1" -frames:v 1 "image_$i.png"
+    printf '\rSaving images: [%d/%d] %03d%%' "$i" "$images" "$(bc <<< "$i*100/8")"
   done
   printf '\n'
+  z=0
+  for i in $(ls -S1 image*png | head -3 | sort); do
+    (( z++ ))
+    mv "$i" torrent_image_"$z".png
+  done
 }
 
 # infobar parser
@@ -464,5 +470,5 @@ done
 # Deleting thumbnails.
 if [[ -f torrent_image_1.png ]]; then
   printf 'Deleting thumbnails.\n'
-  rm torrent_image_*png
+  rm torrent_image*png image*png
 fi
