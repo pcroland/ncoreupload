@@ -282,34 +282,16 @@ for x in "$@"; do
   printf '\e[92m%s\e[0m\n' "$torrent_name"
 
   # Defining torrent category.
+  resolution=$(grep -oP '\d+(?=[ip])' <<< "$torrent_name")
+  type=xvid
+  if (( resolution >= 720 )); then
+    type=hd
+  fi
+  if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
+    type="$type"ser
+  fi
   if grep -qEi "\.hun(\.|\-)" <<< "$torrent_name"; then
-    if grep -qE "(720|1080|2160|4320)(p|i)" <<< "$torrent_name"; then
-      if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
-        type=hdser_hun
-      else
-        type=hd_hun
-      fi
-    else
-      if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
-        type=xvidser_hun
-      else
-        type=xvid_hun
-      fi
-    fi
-  else
-    if grep -qE "(720|1080|2160|4320)(p|i)" <<< "$torrent_name"; then
-      if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
-        type=hdser
-      else
-        type=hd
-      fi
-    else
-      if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
-        type=xvidser
-      else
-        type=xvid
-      fi
-    fi
+    type="$type"_hun
   fi
 
   # Generating thumbnail images.
