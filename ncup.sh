@@ -18,6 +18,9 @@ imagegen() {
     (( z++ ))
     mv "$i" torrent_image_"$z".png
   done
+  torrent_image_1='@torrent_image_1.png'
+  torrent_image_2='@torrent_image_2.png'
+  torrent_image_3='@torrent_image_3.png'
 }
 
 # infobar parser
@@ -358,13 +361,6 @@ for x in "$@"; do
   [[ -z "$runtime" ]] && runtime=$(ajax_parser movie_hossz)
   [[ -z "$director" ]] && director=$(ajax_parser movie_rendezo)
   [[ -z "$cast" ]] && cast=$(ajax_parser movie_szereplok)
-
-  # Setting torrent image values if files exist.
-  if [[ -f torrent_image_1.png ]]; then
-    torrent_image_1='@torrent_image_1.png'
-    torrent_image_2='@torrent_image_2.png'
-    torrent_image_3='@torrent_image_3.png'
-  fi
 
   # Print infobar values.
   if [[ "$print_infobar" == true ]]; then
