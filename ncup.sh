@@ -194,6 +194,16 @@ source "$config"
 [[ -z "$description" ]] && description='false'
 [[ -z "$post_to_feed" ]] && post_to_feed='false'
 
+# Anonymous upload config.
+if [[ "$anonymous_upload" == true ]]; then
+  anonymous='igen'
+elif [[ "$anonymous_upload" == false ]]; then
+  anonymous='nem'
+else
+  printf '\e[91m%s\e[0m\n' "ERROR: Unsupported anonymous value." >&2
+  exit 1
+fi
+
 # Searching for cookies.txt next to the script,
 # if it doesn't exist, show login prompt.
 # If login fails exit.
@@ -208,16 +218,6 @@ else
   mkdir -p "$(dirname "$cookies")"
   printf '\e[91m%s\e[0m\n' "ERROR: cookies.txt is missing, login: "
   login
-fi
-
-# Anonymous upload config.
-if [[ "$anonymous_upload" == true ]]; then
-  anonymous='igen'
-elif [[ "$anonymous_upload" == false ]]; then
-  anonymous='nem'
-else
-  printf '\e[91m%s\e[0m\n' "ERROR: Unsupported anonymous value." >&2
-  exit 1
 fi
 
 # Grabbing the getUnique id.
