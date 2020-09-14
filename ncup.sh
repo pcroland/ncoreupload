@@ -253,17 +253,17 @@ for x in "$@"; do
     fi
     if [[ ! -f "$torrent_file" ]]; then
       torrent_created=1
-      animation &
-      pid=$!
       if [[ $torrent_program == mktorrent ]]; then
-        mktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" &> /dev/null
+        mktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" | while read -r; do printf '\r\e[K%s' "$REPLY"; done
       elif [[ "$torrent_program" == mktor ]]; then
-        mktor "$x" http://bithumen.be:11337/announce -o "$torrent_file" &> /dev/null
+        animation &
+        pid=$!
+        mktor "$x" http://bithumen.be:11337/announce --chunk-min 16M --chunk-max 16M -o "$torrent_file" &> /dev/null
+        kill -PIPE "$pid"
       else
         printf '\e[91m%s\e[0m\n' "ERROR: Unsupported torrent program." >&2
         exit 1
       fi
-      kill -PIPE "$pid"
 	  printf '\n'
     fi
   if (( nfo_created && ! torrent_created )); then
