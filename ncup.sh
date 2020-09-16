@@ -399,7 +399,7 @@ for x in "$@"; do
         read -r -p 'port.hu link: ' port_link
       fi
     fi
-    port_description=$(curl -s "$port_link" | grep -A1 'application/ld+json' | xmlstarlet sel -t -v '//script/text()' | jq -r '.description // empty')
+    port_description=$(curl -s "$port_link" | grep og:description | sed -r 's,>$, />,' | xmlstarlet sel -t -v '//meta/@content' 2>/dev/null)
     printf 'Description: \e[93m%s...\e[0m\n' "${port_description:0:$(($(tput cols)-16))}"
   fi
 
