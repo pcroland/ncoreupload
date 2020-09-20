@@ -114,6 +114,17 @@ login() {
   fi
 }
 
+extract_nfo_urls() {
+  nfo_urls=$(grep -Eo "(http|https)://[a-zA-Z0-9./?=_%:-]*" "$1")
+  nfo_urls_extracted=$(while IFS= read -r line; do
+    if grep 'imdb.com\|tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' <<< "$line"; then
+      echo "$line"
+    else
+      curl -Ls -o /dev/null -w "%{url_effective}" "$line"
+    fi
+  done <<< "$nfo_urls")
+}
+
 help=$(cat <<'EOF'
 Usage:
   ncup [input(s)]
@@ -344,7 +355,8 @@ for x in "$@"; do
   # if that fails it will scrape imdb.com for an id based on the torrent name.
   if [[ -z "$imdb" ]]; then
     # shellcheck disable=SC2128
-    imdb=$(grep -Poa '(tt[[:digit:]]*)(?=/)' "$nfo_file")
+    extract_nfo_urls "$nfo_file"
+    imdb=$(grep -Poa '(tt[[:digit:]]*)(?=/)' <<< "$nfo_urls_extracted")
   fi
   if [[ -z "$imdb" ]]; then
     printf "Scraping imdb.com for id: "
@@ -364,7 +376,8 @@ for x in "$@"; do
   # if that fails it will scrape port.hu for an id based on the torrent name.
   if [[ -z "$movie_database" ]]; then
     # shellcheck disable=SC2128
-    movie_database=$(grep -Eo "(http|https)://[a-zA-Z0-9./?=_%:-]*" "$nfo_file" | grep 'tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' | head -1)
+    [[ -z "$nfo_urls_extracted" ]] && extract_nfo_urls "$nfo_file"
+    movie_database=$(grep 'tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' <<< "$nfo_urls_extracted" | head -1)
   fi
   if [[ -z "$movie_database" ]]; then
     printf 'Scraping IMDb for title: '
@@ -508,7 +521,7 @@ for x in "$@"; do
   if (( t < $# )); then
     print_separator
   fi
-  unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres country runtime director cast seasons episodes
+  unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres country runtime director cast seasons episodes nfo_urls_extracted
 done
 
 # Deleting screenshots.
