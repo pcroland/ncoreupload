@@ -511,11 +511,10 @@ for x in "$@"; do
     print_separator
   fi
   unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres country runtime director cast seasons episodes
-  printf '\n\n%s\n\n\n' "$description"
 done
 
-# Deleting thumbnails.
-if [[ -f torrent_image_1.png ]]; then
-  printf 'Deleting thumbnails.\n'
+# Deleting screenshots.
+if [[ "$screenshots_in_upload" == true ]] || [[ "$screenshots_in_description" == true ]]; then
+  printf 'Deleting screenshots.\n'
   rm image*png screenshot*
 fi
