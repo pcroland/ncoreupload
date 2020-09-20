@@ -4,23 +4,44 @@ LANG=C.UTF-8
 
 # image generator
 imagegen() {
-  images=8
+  printf '\rSaving screenshots: [0/00] 0%%'
+  images=12
   seconds=$(ffprobe "$1" -v quiet -print_format json -show_format | jq -r '.format.duration')
   interval=$(bc <<< "scale=4; $seconds/($images+1)")
-  for i in {1..8}; do
+  for i in {1..12}; do
     framepos=$(bc <<< "scale=4; $interval*$i")
     ffmpeg -y -v quiet -ss "$framepos" -i "$1" -frames:v 1 "image_$i.png"
-    printf '\rSaving images: [%d/%d] %03d%%' "$i" "$images" "$(bc <<< "$i*100/8")"
+    printf '\rSaving screenshots: [%d/%d] %d%%' "$i" "$images" "$(bc <<< "$i*100/12")"
   done
   printf '\n'
   z=0
-  for i in $(ls -S1 image*png | head -3 | sort); do
+  for i in $(ls -S1 image*png | head -n 6 | sort); do
     (( z++ ))
-    mv "$i" torrent_image_"$z".png
+    mv "$i" screenshot_"$z".png
   done
-  torrent_image_1='@torrent_image_1.png'
-  torrent_image_2='@torrent_image_2.png'
-  torrent_image_3='@torrent_image_3.png'
+}
+
+# image uploader
+keksh() {
+  curl -fsSL https://kek.sh/api/v1/posts -F file="@$1" | jq -r '"https://i.kek.sh/\(.filename)"'
+}
+
+# bbcode generator
+generate_screenshot_bbcode() {
+  printf '\rUploading screenshots: [0/6] 0%%'
+  for i in {1..6}; do
+    convert screenshot_"$i".png -resize 220x -quality 85 screenshot_"$i"_small.jpg
+    eval img"$i"=$(keksh screenshot_"$i".png)
+    eval imgsmall"$i"=$(keksh screenshot_"$i"_small.jpg)
+    printf '\rUploading screenshots: [%d/6] %d%%' "$i" "$(bc <<< "$i*100/6")"
+    #printf 'screenshot_%s: %s, %s \n' "$i" "$screenshot_${i}_url" "$screenshot_${i}_small_url"
+  done
+  printf '\n'
+  if [[ -n "$img1" && -n "$img2" && -n "$img3" && -n "$img4" && -n "$img5" && -n "$img6" && -n "$imgsmall1" && -n "$imgsmall2" && -n "$imgsmall3" && -n "$imgsmall4" && -n "$imgsmall5" && -n "$imgsmall6" ]]; then
+    screenshot_bb_code='[spoiler=Screenshots][center][url='"$img1"'][img]'"$imgsmall1"'[/img][/url][url='"$img2"'][img]'"$imgsmall2"'[/img][/url][url='"$img3"'][img]'"$imgsmall3"'[/img][/url]
+[url='"$img4"'][img]'"$imgsmall4"'[/img][/url][url='"$img5"'][img]'"$imgsmall5"'[/img][/url][url='"$img6"'][img]'"$imgsmall6"'[/img][/url]
+[i]  (Kattins a képekre a magas felbontásban való megjelenítéshez.)[/i][/center][/spoiler]'
+  fi
 }
 
 # infobar parser
@@ -115,11 +136,13 @@ EOF
 
 default_config=$(cat <<EOF
 torrent_program='mktorrent'
-generate_images='true'
+screenshots_in_upload='true'
+screenshots_in_description='false'
+port_description='true'
+port_description_before_screenshots='false'
+post_to_feed='false'
 print_infobar='false'
 anonymous_upload='false'
-description='false'
-post_to_feed='false'
 EOF
 )
 
@@ -188,11 +211,13 @@ infobar_checker
 # shellcheck disable=SC1090
 source "$config"
 [[ -z "$torrent_program" ]] && torrent_program='mktorrent'
-[[ -z "$generate_images" ]] && generate_images='true'
+[[ -z "$screenshots_in_upload" ]] && screenshots_in_upload='true'
+[[ -z "$screenshots_in_description" ]] && screenshots_in_description='false'
+[[ -z "$port_description" ]] && port_description='true'
+[[ -z "$port_description_before_screenshots" ]] && port_description_before_screenshots='false'
+[[ -z "$post_to_feed" ]] && post_to_feed='false'
 [[ -z "$print_infobar" ]] && print_infobar='false'
 [[ -z "$anonymous_upload" ]] && anonymous_upload='false'
-[[ -z "$description" ]] && description='false'
-[[ -z "$post_to_feed" ]] && post_to_feed='false'
 
 # Anonymous upload config.
 if [[ "$anonymous_upload" == true ]]; then
@@ -303,10 +328,18 @@ for x in "$@"; do
     type="$type"_hun
   fi
 
-  # Generating thumbnail images.
-  if [[ "$generate_images" == true ]]; then
+  # Generating screenshots.
+  if [[ "$screenshots_in_upload" == true ]] || [[ "$screenshots_in_description" == true ]]; then
     file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | sort -n | head -n 1)
     imagegen "$file"
+    if [[ "$screenshots_in_upload" == true ]]; then
+      screenshot_1='@screenshot_1.png'
+      screenshot_2='@screenshot_2.png'
+      screenshot_3='@screenshot_3.png'
+    fi
+    if [[ "$screenshots_in_description" == true ]]; then
+      generate_screenshot_bbcode
+    fi
   fi
 
   # Setting IMDb id from NFO file if it's not set manually in infobar.txt,
@@ -384,7 +417,7 @@ for x in "$@"; do
 
   # Grab description from port.hu
   # shellcheck disable=SC2154
-  if [[ "$description" == true ]]; then
+  if [[ "$port_description" == true ]]; then
     if [[ "$movie_database" == *port.hu* ]]; then
       port_link="$movie_database"
     else
@@ -399,8 +432,25 @@ for x in "$@"; do
         read -r -p 'port.hu link: ' port_link
       fi
     fi
-    port_description=$(curl -s "$port_link" | grep -A1 'application/ld+json' | sed -r 's#<br ?/?>#\\n#gi' | xmlstarlet sel -t -v '//script/text()' 2>/dev/null | jq -r '.description // empty')
-    printf 'Description: \e[93m%s...\e[0m\n' "${port_description:0:$(($(tput cols)-16))}"
+    porthu_description=$(curl -s "$port_link" | grep -A1 'application/ld+json' | sed -r 's#<br ?/?>#\\n#gi' | xmlstarlet sel -t -v '//script/text()' 2>/dev/null | jq -r '.description // empty')
+    printf 'Description: \e[93m%s...\e[0m\n' "${porthu_description:0:$(($(tput cols)-16))}"
+  fi
+
+  # Setup description.
+  if [[ "$port_description" == true ]] && [[ "$screenshots_in_description" == true ]]; then
+    if [[ "$port_description_before_screenshots" == true ]]; then
+      description="$porthu_description"'
+
+'"$screenshot_bb_code"
+    else
+      description="$screenshot_bb_code"'
+
+'"$porthu_description"
+    fi
+  elif [[ "$port_description" == true ]] && [[ "$screenshots_in_description" == false ]]; then
+    description="$porthu_description"
+  elif [[ "$port_description" == false ]] && [[ "$screenshots_in_description" == true ]]; then
+    description="$screenshot_bb_code"
   fi
 
   if (( ! noupload )); then
@@ -415,10 +465,10 @@ for x in "$@"; do
     -F torrent_nev="$torrent_name" \
     -F torrent_fajl=@"$torrent_file" \
     -F nfo_fajl=@"$nfo_file" \
-    -F szoveg="$port_description" \
-    -F kep1="$torrent_image_1" \
-    -F kep2="$torrent_image_2" \
-    -F kep3="$torrent_image_3" \
+    -F szoveg="$description" \
+    -F kep1="$screenshot_1" \
+    -F kep2="$screenshot_2" \
+    -F kep3="$screenshot_3" \
     -F imdb_id="$imdb" \
     -F film_adatbazis="$movie_database" \
     -F infobar_picture="$infobar_picture" \
@@ -461,10 +511,11 @@ for x in "$@"; do
     print_separator
   fi
   unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres country runtime director cast seasons episodes
+  printf '\n\n%s\n\n\n' "$description"
 done
 
 # Deleting thumbnails.
 if [[ -f torrent_image_1.png ]]; then
   printf 'Deleting thumbnails.\n'
-  rm torrent_image*png image*png
+  rm image*png screenshot*
 fi
