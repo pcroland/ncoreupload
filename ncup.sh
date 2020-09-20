@@ -31,7 +31,7 @@ generate_screenshot_bbcode() {
   screenshot_bb_code='[spoiler=Screenshots][center]'
   printf '\rUploading screenshots: [0/6] 0%%'
   for i in {1..6}; do
-    convert screenshot_"$i".png -resize 220x -quality 85 screenshot_"$i"_small.jpg
+    ffmpeg -y -v quiet -i screenshot_"$i".png -vf scale=220:-1 -qscale:v 3 screenshot_"$i"_small.jpg
     img=$(keksh screenshot_"$i".png || { screenshot_bb_code=''; return; })
     imgsmall=$(keksh screenshot_"$i"_small.jpg || { screenshot_bb_code''; return; })
     printf '\rUploading screenshots: [%d/6] %s, %s' "$i" "$img" "$imgsmall"
@@ -39,7 +39,7 @@ generate_screenshot_bbcode() {
     screenshot_bb_code+="[url=$img][img]${imgsmall}[/img][/url] "
   done
   printf '\n'
-  screenshot_bb_code+=$'\n[i]  (Kattints a képekre a teljes felbontásban való megjelenítéshez.)[/i][/center][/spoiler]'
+  screenshot_bb_code+=$'\n[i]  (Kattints a képekre a teljes felbontásban való megtekintéshez.)[/i][/center][/spoiler]'
 }
 
 # infobar parser
