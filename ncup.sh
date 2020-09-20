@@ -116,13 +116,15 @@ login() {
 
 extract_nfo_urls() {
   nfo_urls=$(grep -Eo "(http|https)://[a-zA-Z0-9./?=_%:-]*" "$1")
-  nfo_urls_extracted=$(while IFS= read -r line; do
-    if grep 'imdb.com\|tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' <<< "$line"; then
-      echo "$line"
-    else
-      curl -Ls -o /dev/null -w "%{url_effective}" "$line"
-    fi
-  done <<< "$nfo_urls")
+  if [[ "$extract_urls" == true ]]; then
+    nfo_urls=$(while IFS= read -r line; do
+      if grep 'imdb.com\|tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' <<< "$line"; then
+        echo "$line"
+      else
+        curl -Ls -o /dev/null -w "%{url_effective}" "$line"
+      fi
+    done <<< "$nfo_urls")
+  fi
 }
 
 help=$(cat <<'EOF'
@@ -152,6 +154,7 @@ port_description_before_screenshots='false'
 post_to_feed='false'
 print_infobar='false'
 anonymous_upload='false'
+extract_urls='true'
 EOF
 )
 
@@ -227,6 +230,7 @@ source "$config"
 [[ -z "$post_to_feed" ]] && post_to_feed='false'
 [[ -z "$print_infobar" ]] && print_infobar='false'
 [[ -z "$anonymous_upload" ]] && anonymous_upload='false'
+[[ -z "$extract_urls" ]] && extract_urls='true'
 
 # Anonymous upload config.
 if [[ "$anonymous_upload" == true ]]; then
@@ -356,7 +360,7 @@ for x in "$@"; do
   if [[ -z "$imdb" ]]; then
     # shellcheck disable=SC2128
     extract_nfo_urls "$nfo_file"
-    imdb=$(grep -Poa '(tt[[:digit:]]*)(?=/)' <<< "$nfo_urls_extracted")
+    imdb=$(grep -Poa '(tt[[:digit:]]*)(?=/)' <<< "$nfo_urls")
   fi
   if [[ -z "$imdb" ]]; then
     printf "Scraping imdb.com for id: "
@@ -377,7 +381,7 @@ for x in "$@"; do
   if [[ -z "$movie_database" ]]; then
     # shellcheck disable=SC2128
     [[ -z "$nfo_urls_extracted" ]] && extract_nfo_urls "$nfo_file"
-    movie_database=$(grep 'tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' <<< "$nfo_urls_extracted" | head -1)
+    movie_database=$(grep 'tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' <<< "$nfo_urls" | head -1)
   fi
   if [[ -z "$movie_database" ]]; then
     printf 'Scraping IMDb for title: '
