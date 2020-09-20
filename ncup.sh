@@ -28,20 +28,18 @@ keksh() {
 
 # bbcode generator
 generate_screenshot_bbcode() {
+  screenshot_bb_code='[spoiler=Screenshots][center]'
   printf '\rUploading screenshots: [0/6] 0%%'
   for i in {1..6}; do
     convert screenshot_"$i".png -resize 220x -quality 85 screenshot_"$i"_small.jpg
-    eval img"$i"=$(keksh screenshot_"$i".png)
-    eval imgsmall"$i"=$(keksh screenshot_"$i"_small.jpg)
-    printf '\rUploading screenshots: [%d/6] %d%%' "$i" "$(bc <<< "$i*100/6")"
-    #printf 'screenshot_%s: %s, %s \n' "$i" "$screenshot_${i}_url" "$screenshot_${i}_small_url"
+    img=$(keksh screenshot_"$i".png || { screenshot_bb_code=''; return; })
+    imgsmall=$(keksh screenshot_"$i"_small.jpg || { screenshot_bb_code''; return; })
+    printf '\rUploading screenshots: [%d/6] %s, %s' "$i" "$img" "$imgsmall"
+    (( i == 4 )) && screenshot_bb_code+=$'\n'
+    screenshot_bb_code+="[url=$img][img]${imgsmall}[/img][/url] "
   done
   printf '\n'
-  if [[ -n "$img1" && -n "$img2" && -n "$img3" && -n "$img4" && -n "$img5" && -n "$img6" && -n "$imgsmall1" && -n "$imgsmall2" && -n "$imgsmall3" && -n "$imgsmall4" && -n "$imgsmall5" && -n "$imgsmall6" ]]; then
-    screenshot_bb_code='[spoiler=Screenshots][center][url='"$img1"'][img]'"$imgsmall1"'[/img][/url][url='"$img2"'][img]'"$imgsmall2"'[/img][/url][url='"$img3"'][img]'"$imgsmall3"'[/img][/url]
-[url='"$img4"'][img]'"$imgsmall4"'[/img][/url][url='"$img5"'][img]'"$imgsmall5"'[/img][/url][url='"$img6"'][img]'"$imgsmall6"'[/img][/url]
-[i]  (Kattints a képekre a teljes felbontásban való megjelenítéshez.)[/i][/center][/spoiler]'
-  fi
+  screenshot_bb_code+=$'\n[i]  (Kattints a képekre a teljes felbontásban való megjelenítéshez.)[/i][/center][/spoiler]'
 }
 
 # infobar parser
