@@ -15,7 +15,7 @@ imagegen() {
   done
   printf '\n'
   z=0
-  for i in $(ls -S1 image*png | head -n 6 | sort); do
+  for i in $(ls -S1 image*png | head -n 9 | sort); do
     (( z++ ))
     mv "$i" screenshot_"$z".png
   done
@@ -30,7 +30,7 @@ keksh() {
 generate_screenshot_bbcode() {
   screenshot_bb_code='[spoiler=Screenshots][center]'
   printf '\rUploading screenshots: [0/6] 0%%'
-  for i in {1..6}; do
+  for i in {4..9}; do
     ffmpeg -y -v quiet -i screenshot_"$i".png -vf scale=220:-1 -qscale:v 3 screenshot_"$i"_small.jpg
     img=$(keksh screenshot_"$i".png || { screenshot_bb_code=''; return; })
     imgsmall=$(keksh screenshot_"$i"_small.jpg || { screenshot_bb_code''; return; })
