@@ -380,7 +380,7 @@ for x in "$@"; do
   # if that fails it will scrape port.hu for an id based on the torrent name.
   if [[ -z "$movie_database" ]]; then
     # shellcheck disable=SC2128
-    [[ -z "$nfo_urls_extracted" ]] && extract_nfo_urls "$nfo_file"
+    [[ -z "$nfo_urls" ]] && extract_nfo_urls "$nfo_file"
     movie_database=$(grep 'tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' <<< "$nfo_urls" | head -1)
   fi
   if [[ -z "$movie_database" ]]; then
@@ -525,7 +525,7 @@ for x in "$@"; do
   if (( t < $# )); then
     print_separator
   fi
-  unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres country runtime director cast seasons episodes nfo_urls_extracted
+  unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres country runtime director cast seasons episodes nfo_urls
 done
 
 # Deleting screenshots.
