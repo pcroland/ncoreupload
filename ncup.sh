@@ -40,7 +40,7 @@ generate_screenshot_bbcode() {
   if [[ -n "$img1" && -n "$img2" && -n "$img3" && -n "$img4" && -n "$img5" && -n "$img6" && -n "$imgsmall1" && -n "$imgsmall2" && -n "$imgsmall3" && -n "$imgsmall4" && -n "$imgsmall5" && -n "$imgsmall6" ]]; then
     screenshot_bb_code='[spoiler=Screenshots][center][url='"$img1"'][img]'"$imgsmall1"'[/img][/url][url='"$img2"'][img]'"$imgsmall2"'[/img][/url][url='"$img3"'][img]'"$imgsmall3"'[/img][/url]
 [url='"$img4"'][img]'"$imgsmall4"'[/img][/url][url='"$img5"'][img]'"$imgsmall5"'[/img][/url][url='"$img6"'][img]'"$imgsmall6"'[/img][/url]
-[i]  (Kattins a képekre a magas felbontásban való megjelenítéshez.)[/i][/center][/spoiler]'
+[i]  (Kattints a képekre a teljes felbontásban való megjelenítéshez.)[/i][/center][/spoiler]'
   fi
 }
 
