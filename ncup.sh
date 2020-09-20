@@ -15,6 +15,7 @@ imagegen() {
   done
   printf '\n'
   z=0
+  # shellcheck disable=SC2012
   for i in $(ls -S1 image*png | head -n 9 | sort); do
     (( z++ ))
     mv "$i" screenshot_"$z".png
@@ -32,9 +33,11 @@ generate_screenshot_bbcode() {
   printf '\rUploading screenshots: [0/6] 0%%'
   for i in {4..9}; do
     ffmpeg -y -v quiet -i screenshot_"$i".png -vf scale=220:-1 -qscale:v 3 screenshot_"$i"_small.jpg
+    # shellcheck disable=SC2030
     img=$(keksh screenshot_"$i".png || { screenshot_bb_code=''; return; })
     imgsmall=$(keksh screenshot_"$i"_small.jpg || { screenshot_bb_code''; return; })
     printf '\rUploading screenshots: [%d/6] %s, %s' "$i" "$img" "$imgsmall"
+    # shellcheck disable=SC2031
     (( i == 4 )) && screenshot_bb_code+=$'\n'
     screenshot_bb_code+="[url=$img][img]${imgsmall}[/img][/url] "
   done
