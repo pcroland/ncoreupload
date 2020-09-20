@@ -30,13 +30,15 @@ keksh() {
 # bbcode generator
 generate_screenshot_bbcode() {
   screenshot_bb_code='[spoiler=Screenshots][center]'
-  printf '\rUploading screenshots: [0/6] 0%%'
+  printf '\rUploading screenshots: [0/6]'
+  s=0
   for i in {4..9}; do
+    (( s++ ))
     ffmpeg -y -v quiet -i screenshot_"$i".png -vf scale=220:-1 -qscale:v 3 screenshot_"$i"_small.jpg
     # shellcheck disable=SC2030
     img=$(keksh screenshot_"$i".png || { screenshot_bb_code=''; return; })
     imgsmall=$(keksh screenshot_"$i"_small.jpg || { screenshot_bb_code''; return; })
-    printf '\rUploading screenshots: [%d/6] %s, %s' "$i" "$img" "$imgsmall"
+    printf '\rUploading screenshots: [%d/6] %s, %s' "$s" "$img" "$imgsmall"
     # shellcheck disable=SC2031
     (( i == 4 )) && screenshot_bb_code+=$'\n'
     screenshot_bb_code+="[url=$img][img]${imgsmall}[/img][/url] "
@@ -363,7 +365,7 @@ for x in "$@"; do
   if [[ -z "$imdb" ]]; then
     # shellcheck disable=SC2128
     extract_nfo_urls "$nfo_file"
-    imdb=$(grep -Poa '(tt[[:digit:]]*)(?=/)' <<< "$nfo_urls")
+    imdb=$(grep -Poa '(tt[[:digit:]]*)(?=/)' <<< "$nfo_urls" | head -n 1)
   fi
   if [[ -z "$imdb" ]]; then
     printf "Scraping imdb.com for id: "
