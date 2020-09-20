@@ -14,9 +14,9 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 ## Szükséges programok
 * `curl`
 * `jq`
-* `ffmpeg`, `ffprobe` (ha a config fájlban `generate_images='true'` (default))
-* `mktorrent`/`mktor` (configolható (mktorrent a default))
-* `xmlstarlet` (ha a config fájlban `description='true'` van)
+* `ffmpeg`, `ffprobe` (ha a configban a `screenshots_in_upload` vagy a `screenshots_in_description` ``'true'` (default))
+* `mktorrent`/`mktor` (configolható (`mktorrent` a default))
+* `xmlstarlet` (ha a configban `port_description='true'` (default))
 * `mediainfo` (ha a feltölteni kívánt mappában nincs NFO fájl, a script létrehoz egyet)
 ## Telepítés
 * `install -D -m 755 <(curl -fsSL git.io/JJ94i) ~/.local/bin/ncup`
@@ -24,7 +24,7 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 (Ha a `~/.local/bin` nincs benne PATH-ban, akkor írjuk be a `.bashrc`/`.zshrc` fájlunkba hogy: `PATH="$HOME/.local/bin:$PATH"`.)
 * `hash -r && ncup -d && ncup -e`
 * A `cookies.txt` fájlt az `~/.ncup` mappába másoljuk.
-* `ncup -e` paranccsal tudjuk szerkeszteni a config fájlunkat.
+* `ncup -c` paranccsal tudjuk szerkeszteni a config fájlunkat.
 ## Használat
 ```sh
 ncup [input(s)]
