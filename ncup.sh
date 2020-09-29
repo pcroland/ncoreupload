@@ -299,7 +299,7 @@ for x in "$@"; do
       if [[ "$torrent_program" == pmktorrent ]]; then
         animation &
         pid=$!
-        pmktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" &> /dev/null
+        pmktorrent -q -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x"
         kill -PIPE "$pid"
       elif [[ "$torrent_program" == mktorrent ]]; then
         mktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" | while read -r; do printf '\r\e[K%s' "$REPLY"; done
