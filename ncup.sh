@@ -150,8 +150,8 @@ Example:
 EOF
 )
 
-default_config=$(cat <<EOF
-torrent_program='mktorrent'
+default_config=$(cat <<'EOF'
+torrent_program='pmktorrent'
 screenshots_in_upload='true'
 screenshots_in_description='false'
 port_description='true'
@@ -163,7 +163,7 @@ extract_urls='true'
 EOF
 )
 
-default_infobar=$(cat <<EOF
+default_infobar=$(cat <<'EOF'
 imdb=
 movie_database=
 hun_title=
@@ -227,7 +227,7 @@ infobar_checker
 # Update config values if something is missing (old config).
 # shellcheck disable=SC1090
 source "$config"
-[[ -z "$torrent_program" ]] && torrent_program='mktorrent'
+[[ -z "$torrent_program" ]] && torrent_program='pmktorrent'
 [[ -z "$screenshots_in_upload" ]] && screenshots_in_upload='true'
 [[ -z "$screenshots_in_description" ]] && screenshots_in_description='false'
 [[ -z "$port_description" ]] && port_description='true'
@@ -296,7 +296,12 @@ for x in "$@"; do
     fi
     if [[ ! -f "$torrent_file" ]]; then
       torrent_created=1
-      if [[ $torrent_program == mktorrent ]]; then
+      if [[ "$torrent_program" == pmktorrent ]]; then
+        animation &
+        pid=$!
+        pmktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" &> /dev/null
+        kill -PIPE "$pid"
+      elif [[ "$torrent_program" == mktorrent ]]; then
         mktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" | while read -r; do printf '\r\e[K%s' "$REPLY"; done
       elif [[ "$torrent_program" == mktor ]]; then
         animation &
