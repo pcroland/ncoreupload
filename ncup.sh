@@ -10,15 +10,15 @@ imagegen() {
   interval=$(bc <<< "scale=4; $seconds/($images+1)")
   for i in {1..12}; do
     framepos=$(bc <<< "scale=4; $interval*$i")
-    ffmpeg -y -v quiet -ss "$framepos" -i "$1" -pix_fmt rgb24 -frames:v 1 "image_$i.png"
+    ffmpeg -y -v quiet -ss "$framepos" -i "$1" -frames:v 1 -q:v 100 -compression_level 6 "image_$i.webp"
     printf '\rSaving screenshots: [%d/%d] %d%%' "$i" "$images" "$(bc <<< "$i*100/12")"
   done
   printf '\n'
   z=0
   # shellcheck disable=SC2012
-  for i in $(ls -S1 image*png | head -n 9 | sort); do
+  for i in $(ls -S1 image*webp | head -n 9 | sort); do
     (( z++ ))
-    mv "$i" screenshot_"$z".png
+    mv "$i" screenshot_"$z".webp
   done
 }
 
@@ -34,9 +34,9 @@ generate_screenshot_bbcode() {
   s=0
   for i in {4..9}; do
     (( s++ ))
-    ffmpeg -y -v quiet -i screenshot_"$i".png -vf scale=220:-1 -qscale:v 3 screenshot_"$i"_small.jpg
+    ffmpeg -y -v quiet -i screenshot_"$i".webp -vf scale=220:-1 -qscale:v 3 screenshot_"$i"_small.jpg
     # shellcheck disable=SC2030
-    img=$(keksh screenshot_"$i".png || { screenshot_bb_code=''; return; })
+    img=$(keksh screenshot_"$i".webp || { screenshot_bb_code=''; return; })
     imgsmall=$(keksh screenshot_"$i"_small.jpg || { screenshot_bb_code''; return; })
     printf '\rUploading screenshots: [%d/6] %s, %s' "$s" "$img" "$imgsmall"
     # shellcheck disable=SC2031
@@ -356,6 +356,9 @@ for x in "$@"; do
     file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | sort -n | head -n 1)
     imagegen "$file"
     if [[ "$screenshots_in_upload" == true ]]; then
+      for i in {1..3}; do
+        ffmpeg -y -v quiet -i screenshot_"$i".webp screenshot_"$i".png
+      done
       screenshot_1='@screenshot_1.png'
       screenshot_2='@screenshot_2.png'
       screenshot_3='@screenshot_3.png'
