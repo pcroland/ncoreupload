@@ -10,7 +10,7 @@ imagegen() {
   interval=$(bc <<< "scale=4; $seconds/($images+1)")
   for i in {1..12}; do
     framepos=$(bc <<< "scale=4; $interval*$i")
-    ffmpeg -y -v quiet -ss "$framepos" -i "$1" -frames:v 1 "image_$i.png"
+    ffmpeg -y -v quiet -ss "$framepos" -i "$1" -pix_fmt rgb24 -frames:v 1 "image_$i.png"
     printf '\rSaving screenshots: [%d/%d] %d%%' "$i" "$images" "$(bc <<< "$i*100/12")"
   done
   printf '\n'
