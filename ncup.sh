@@ -544,5 +544,5 @@ done
 # Deleting screenshots.
 if [[ "$screenshots_in_upload" == true ]] || [[ "$screenshots_in_description" == true ]]; then
   printf 'Deleting screenshots.\n'
-  rm image*png screenshot*
+  rm image*webp screenshot*
 fi
