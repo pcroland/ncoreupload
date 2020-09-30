@@ -453,7 +453,7 @@ for x in "$@"; do
       search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
       printf '\e[93m%s\e[0m\n' "$search_name_imdb"
       printf 'Scraping port.hu for link: '
-      port_link=$(curl -s "https://port.hu/search/suggest-list?q=$search_name_imdb" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
+      port_link=$(curl -s "https://port.hu/search/suggest-list?q=$(jq -rR '@uri' <<< "$search_name_imdb")" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
       printf '\e[93m%s\e[0m\n' "$port_link"
       if [[ -z "$port_link" ]]; then
         printf '\e[91m%s\e[0m\n' "ERROR: port.hu scraping failed."
