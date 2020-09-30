@@ -345,10 +345,10 @@ for x in "$@"; do
     type=hd
   fi
   if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
-    type="$type"ser
+    type+=ser
   fi
   if grep -qEi "\.hun(\.|\-)" <<< "$torrent_name"; then
-    type="$type"_hun
+    type+=_hun
   fi
 
   # Generating screenshots.
