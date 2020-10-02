@@ -154,6 +154,7 @@ default_config=$(cat <<'EOF'
 torrent_program='pmktorrent'
 screenshots_in_upload='true'
 screenshots_in_description='false'
+screenshots_from_last_file='false'
 port_description='true'
 port_description_before_screenshots='false'
 post_to_feed='false'
@@ -230,6 +231,7 @@ source "$config"
 [[ -z "$torrent_program" ]] && torrent_program='pmktorrent'
 [[ -z "$screenshots_in_upload" ]] && screenshots_in_upload='true'
 [[ -z "$screenshots_in_description" ]] && screenshots_in_description='false'
+[[ -z "$screenshots_from_last_file" ]] && screenshots_from_last_file='false'
 [[ -z "$port_description" ]] && port_description='true'
 [[ -z "$port_description_before_screenshots" ]] && port_description_before_screenshots='false'
 [[ -z "$post_to_feed" ]] && post_to_feed='false'
@@ -277,7 +279,11 @@ for x in "$@"; do
   nfo_files=("$x"/*.nfo)
   nfo_file="${nfo_files[0]}"
   printf '\e[92m%s\e[0m\n' "$torrent_name"
-  file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | head -n 1)
+  if [[ "$screenshots_from_last_file" == false ]]; then
+    file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | head -n 1)
+  else
+    file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | tail -n 1)
+  fi
   if [[ ! -f "$file" ]]; then
     printf '\e[91m%s\e[0m\n' "ERROR: No video files were found."
     exit 1
