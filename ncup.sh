@@ -132,6 +132,19 @@ extract_nfo_urls() {
   fi
 }
 
+scrape_port() {
+  printf 'Scraping IMDb for title: '
+  search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
+  printf '\e[93m%s\e[0m\n' "$search_name_imdb"
+  printf 'Scraping port.hu for link: '
+  port_link=$(curl -s "https://port.hu/search/suggest-list?q=$(jq -rR '@uri' <<< "$search_name_imdb")" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
+  printf '\e[93m%s\e[0m\n' "$port_link"
+  if [[ -z "$port_link" ]]; then
+    printf '\e[91m%s\e[0m\n' "ERROR: port.hu scraping failed."
+    read -r -p 'port.hu link: ' port_link
+  fi
+}
+
 help=$(cat <<'EOF'
 Usage:
   ncup [input(s)]
@@ -403,12 +416,8 @@ for x in "$@"; do
     movie_database=$(grep 'tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' <<< "$nfo_urls" | head -1)
   fi
   if [[ -z "$movie_database" ]]; then
-    printf 'Scraping IMDb for title: '
-    search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
-    printf '\e[93m%s\e[0m\n' "$search_name_imdb"
-    printf 'Scraping port.hu for link: '
-    movie_database=$(curl -s "https://port.hu/search/suggest-list?q=$(jq -rR '@uri' <<< "$search_name_imdb")" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
-    printf '\e[93m%s\e[0m\n' "$movie_database"
+    scrape_port
+    movie_database="$port_link"
   fi
 
   # Grabbing infobar page.
@@ -455,16 +464,7 @@ for x in "$@"; do
     if [[ "$movie_database" == *port.hu* ]]; then
       port_link="$movie_database"
     else
-      printf 'Scraping IMDb for title: '
-      search_name_imdb=$(curl -s "https://v2.sg.media-imdb.com/suggestion/t/$imdb.json" | jq -r 'if .d then .d[0].l else empty end')
-      printf '\e[93m%s\e[0m\n' "$search_name_imdb"
-      printf 'Scraping port.hu for link: '
-      port_link=$(curl -s "https://port.hu/search/suggest-list?q=$(jq -rR '@uri' <<< "$search_name_imdb")" | jq -r 'if length > 0 then "https://port.hu\(.[0].url)" else empty end')
-      printf '\e[93m%s\e[0m\n' "$port_link"
-      if [[ -z "$port_link" ]]; then
-        printf '\e[91m%s\e[0m\n' "ERROR: port.hu scraping failed."
-        read -r -p 'port.hu link: ' port_link
-      fi
+      scrape_port
     fi
     porthu_description=$(curl -s "$port_link" | grep -A1 'application/ld+json' | sed -r 's#<br ?/?>#\\n#gi' | xmlstarlet sel -t -v '//script/text()' 2>/dev/null | jq -r '.description // empty')
     printf 'Description: \e[93m%s...\e[0m\n' "${porthu_description:0:$(($(tput cols)-16))}"
