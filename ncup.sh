@@ -280,9 +280,9 @@ for x in "$@"; do
   nfo_file="${nfo_files[0]}"
   printf '\e[92m%s\e[0m\n' "$torrent_name"
   if [[ "$screenshots_from_last_file" == false ]]; then
-    file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | head -n 1)
+    file=$(find "$x" \( -name '*.mkv' -o -name '*.mp4' -o -name '*.avi' \) -not -ipath '*/sample/*' -not -ipath '*/samples/*' -not -ipath '*/extra/*' -not -ipath '*/extras/*' | head -n 1)
   else
-    file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | tail -n 1)
+    file=$(find "$x" \( -name '*.mkv' -o -name '*.mp4' -o -name '*.avi' \) -not -ipath '*/sample/*' -not -ipath '*/samples/*' -not -ipath '*/extra/*' -not -ipath '*/extras/*' | tail -n 1)
   fi
   if [[ ! -f "$file" ]]; then
     printf '\e[91m%s\e[0m\n' "ERROR: No video files were found."
