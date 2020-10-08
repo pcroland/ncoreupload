@@ -1,5 +1,4 @@
 ![logo](https://i.kek.sh/coQmSWoCfSX.png)
-
 # ncup
 ### Feltöltő script nCore-ra eredeti release-ekhez film és sorozat kategóriában.
 ## Leírás
