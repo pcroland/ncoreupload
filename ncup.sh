@@ -471,20 +471,19 @@ for x in "$@"; do
   fi
 
   # Setup description.
+  if [[ ${#torrent_name} > 90 ]]; then
+    description="[center][highlight][size=10pt]$torrent_name[/size][/highlight]"$'\n\n'
+  fi
   if [[ "$port_description" == true ]] && [[ "$screenshots_in_description" == true ]]; then
     if [[ "$port_description_before_screenshots" == true ]]; then
-      description="$porthu_description"'
-
-'"$screenshot_bb_code"
+      description+="$porthu_description"$'\n\n'"$screenshot_bb_code"
     else
-      description="$screenshot_bb_code"'
-
-'"$porthu_description"
+      description+="$screenshot_bb_code"$'\n\n'"$porthu_description"
     fi
-  elif [[ "$port_description" == true ]] && [[ "$screenshots_in_description" == false ]]; then
-    description="$porthu_description"
-  elif [[ "$port_description" == false ]] && [[ "$screenshots_in_description" == true ]]; then
-    description="$screenshot_bb_code"
+  elif [[ "$port_description" == true ]]; then
+    description+="$porthu_description"
+  elif [[ "$screenshots_in_description" == true ]]; then
+    description+="$screenshot_bb_code"
   fi
 
   if (( ! noupload )); then
