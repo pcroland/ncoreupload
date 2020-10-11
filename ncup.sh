@@ -545,7 +545,8 @@ for x in "$@"; do
   if (( t < $# )); then
     print_separator
   fi
-  unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres country runtime director cast seasons episodes nfo_urls
+  unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres \
+  country runtime director cast seasons episodes nfo_urls screenshot_bb_code description porthu_description
 done
 
 # Deleting screenshots.
