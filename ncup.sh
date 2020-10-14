@@ -60,11 +60,7 @@ animation(){
   animation=('░▒▓█▓▒░ ' ' ░▒▓█▓▒░' '░ ░▒▓█▓▒' '▒░ ░▒▓█▓' '▓▒░ ░▒▓█' '█▓▒░ ░▒▓' '▓█▓▒░ ░▒' '▒▓█▓▒░ ░')
   while true; do
     for i in "${animation[@]}"; do
-      printf '\r'
-      if (( nfo_created )); then
-        printf 'Creating NFO. '
-      fi
-      printf 'Creating torrent \e[93m%-8s\e[0m' "$i"
+      printf '\rCreating torrent \e[93m%-8s\e[0m' "$i"
       sleep 0.1
     done
   done
@@ -466,7 +462,7 @@ for x in "$@"; do
   description=''
   # shellcheck disable=SC2071
   if [[ ${#torrent_name} > 90 ]]; then
-    description="[center][highlight][size=10pt]$torrent_name[/size][/highlight]"$'\n\n'
+    description="[center][highlight][size=10pt]${torrent_name}[/size][/highlight]"$'\n\n'
   fi
   if [[ "$port_description" == true ]] && [[ "$screenshots_in_description" == true ]]; then
     screenshot_bb_code=$(cat "$torrent_name"_ncup/bbcode.txt)
@@ -548,5 +544,5 @@ done
 if [[ "$screenshots_in_upload" == true ]] || [[ "$screenshots_in_description" == true ]]; then
   print_separator
   printf 'Deleting screenshots.\n'
-  rm -rf *_ncup
+  rm -rf -- *_ncup
 fi
