@@ -2,29 +2,31 @@
 LC_ALL=C.UTF-8
 LANG=C.UTF-8
 
-# image generator
-imagegen() {
-  printf '\rSaving screenshots: [0/12] 0%%'
-  images=12
-  seconds=$(ffprobe "$1" -v quiet -print_format json -show_format | jq -r '.format.duration')
-  interval=$(bc <<< "scale=4; $seconds/($images+1)")
-  for i in {1..12}; do
-    framepos=$(bc <<< "scale=4; $interval*$i")
-    ffmpeg -y -v quiet -ss "$framepos" -i "$1" -frames:v 1 -q:v 100 -compression_level 6 "image_$i.webp"
-    printf '\rSaving screenshots: [%d/%d] %d%%' "$i" "$images" "$(bc <<< "$i*100/12")"
-  done
-  printf '\n'
-  z=0
-  # shellcheck disable=SC2012
-  for i in $(ls -S1 image*webp | head -n 9 | sort); do
-    (( z++ ))
-    mv "$i" screenshot_"$z".webp
-  done
-}
 
 # image uploader
 keksh() {
   curl -fsSL https://kek.sh/api/v1/posts -F file="@$1" | jq -r '"https://i.kek.sh/\(.filename)"'
+}
+
+# image generator
+imagegen() {
+  mkdir -p "${torrent_name}_ncup"
+  printf '\rSaving screenshots: [00/12] 0%%'
+  images=12
+  seconds=$(ffprobe "$1" -v quiet -print_format json -show_format | jq -r '.format.duration')
+  interval=$(bc <<< "scale=4; $seconds/($images+1)")
+  for i in {01..12}; do
+    framepos=$(bc <<< "scale=4; $interval*$i")
+    ffmpeg -y -v quiet -ss "$framepos" -i "$1" -frames:v 1 -q:v 100 -compression_level 6 "${torrent_name}_ncup/image_${i}.webp"
+    printf '\rSaving screenshots: [%s/%s] %s%%' "$i" "$images" "$(bc <<< "$i*100/12")"
+  done
+  printf '\n'
+  z=0
+  # shellcheck disable=SC2012
+  for i in $(ls -S1 "$torrent_name"_ncup/image*webp | head -n 9 | sort); do
+    (( z++ ))
+    mv "$i" "${torrent_name}_ncup/screenshot_${z}.webp"
+  done
 }
 
 # bbcode generator
@@ -34,17 +36,18 @@ generate_screenshot_bbcode() {
   s=0
   for i in {4..9}; do
     (( s++ ))
-    ffmpeg -y -v quiet -i screenshot_"$i".webp -vf scale=220:-1 -qscale:v 3 screenshot_"$i"_small.jpg
+    ffmpeg -y -v quiet -i "${torrent_name}_ncup/screenshot_${i}.webp" -vf scale=220:-1 -qscale:v 3 "${torrent_name}_ncup/screenshot_${i}_small.jpg"
     # shellcheck disable=SC2030
-    img=$(keksh screenshot_"$i".webp || { screenshot_bb_code=''; return; })
-    imgsmall=$(keksh screenshot_"$i"_small.jpg || { screenshot_bb_code''; return; })
-    printf '\rUploading screenshots: [%d/6] %s, %s' "$s" "$img" "$imgsmall"
+    img=$(keksh "${torrent_name}_ncup/screenshot_${i}.webp" || { screenshot_bb_code=''; return; })
+    imgsmall=$(keksh "${torrent_name}_ncup/screenshot_${i}_small.jpg" || { screenshot_bb_code''; return; })
+    printf '\rUploading screenshots: [%s/6] %s, %s' "$s" "$img" "$imgsmall"
     # shellcheck disable=SC2031
-    (( i == 4 )) && screenshot_bb_code+=$'\n'
+    (( s == 4 )) && screenshot_bb_code+=$'\n'
     screenshot_bb_code+="[url=$img][img]${imgsmall}[/img][/url] "
   done
   printf '\n'
   screenshot_bb_code+=$'\n[i]  (Kattints a képekre a teljes felbontásban való megtekintéshez.)[/i][/center][/spoiler]'
+  printf '%s' "$screenshot_bb_code" > "${torrent_name}_ncup/bbcode.txt"
 }
 
 # infobar parser
@@ -285,6 +288,7 @@ printf '\e[93m%.15s...\e[0m\n' "$unique_id"
 print_separator
 
 # Creating NFO and torrent file if something is missing.
+# Creating screenshots and descriptions
 # Exit if there are multiple NFO files or no video files in the folder.
 for x in "$@"; do
   torrent_name=$(basename "$x")
@@ -309,12 +313,10 @@ for x in "$@"; do
     printf 'Already has NFO and torrent file.\n'
   else
     if [[ ! -f "$nfo_file" ]]; then
-      nfo_created=1
-      printf "Creating NFO. "
+      printf 'Creating NFO.\n'
       mediainfo "$x" > "$x"/"$torrent_name".nfo
     fi
     if [[ ! -f "$torrent_file" ]]; then
-      torrent_created=1
       if [[ "$torrent_program" == pmktorrent ]]; then
         animation &
         pid=$!
@@ -333,12 +335,19 @@ for x in "$@"; do
       fi
 	  printf '\n'
     fi
-  if (( nfo_created && ! torrent_created )); then
-    printf '\n'
   fi
+  # Generating screenshots.
+  if [[ "$screenshots_in_upload" == true ]] || [[ "$screenshots_in_description" == true ]]; then
+    imagegen "$file"
+    if [[ "$screenshots_in_upload" == true ]]; then
+      for i in {1..3}; do
+        ffmpeg -y -v quiet -i "${torrent_name}_ncup/screenshot_${i}.webp" "${torrent_name}_ncup/screenshot_${z}.png"
+      done
+    fi
+    if [[ "$screenshots_in_description" == true ]]; then
+      generate_screenshot_bbcode
+    fi
   fi
-  torrent_created=0
-  nfo_created=0
 done
 print_separator
 
@@ -370,23 +379,6 @@ for x in "$@"; do
     type+=_hun
   fi
 
-  # Generating screenshots.
-  if [[ "$screenshots_in_upload" == true ]] || [[ "$screenshots_in_description" == true ]]; then
-    file=$(find "$x" -name "*.mkv" -o -name "*.mp4" -o -name "*.avi" | sort -n | head -n 1)
-    imagegen "$file"
-    if [[ "$screenshots_in_upload" == true ]]; then
-      for i in {1..3}; do
-        ffmpeg -y -v quiet -i screenshot_"$i".webp screenshot_"$i".png
-      done
-      screenshot_1='@screenshot_1.png'
-      screenshot_2='@screenshot_2.png'
-      screenshot_3='@screenshot_3.png'
-    fi
-    if [[ "$screenshots_in_description" == true ]]; then
-      generate_screenshot_bbcode
-    fi
-  fi
-
   # Setting IMDb id from NFO file if it's not set manually in infobar.txt,
   # if that fails it will scrape imdb.com for an id based on the torrent name.
   if [[ -z "$imdb" ]]; then
@@ -396,7 +388,7 @@ for x in "$@"; do
   fi
   if [[ -z "$imdb" ]]; then
     printf "Scraping imdb.com for id: "
-    if [[ $type == hdser_hun || $type == xvidser_hun ]]; then
+    if [[ "$type" == hdser_hun ]] || [[ "$type" == xvidser_hun ]]; then
       search_name_folder=$(sed -E 's/.(S|E)[0-9]{2}.*//' <<< "$torrent_name" | tr '.' '+')
     else
       search_name_folder=$(sed -E 's/(.[0-9]{4}).*/\1/' <<< "$torrent_name" | tr '.' '+')
@@ -471,12 +463,13 @@ for x in "$@"; do
   fi
 
   # Setup description.
-  description=
+  description=''
   # shellcheck disable=SC2071
   if [[ ${#torrent_name} > 90 ]]; then
     description="[center][highlight][size=10pt]$torrent_name[/size][/highlight]"$'\n\n'
   fi
   if [[ "$port_description" == true ]] && [[ "$screenshots_in_description" == true ]]; then
+    screenshot_bb_code=$(cat "$torrent_name"_ncup/bbcode.txt)
     if [[ "$port_description_before_screenshots" == true ]]; then
       description+="$porthu_description"$'\n\n'"$screenshot_bb_code"
     else
@@ -485,7 +478,14 @@ for x in "$@"; do
   elif [[ "$port_description" == true ]]; then
     description+="$porthu_description"
   elif [[ "$screenshots_in_description" == true ]]; then
-    description+="$screenshot_bb_code"
+    description=$(cat "$torrent_name"_ncup/bbcode.txt)
+  fi
+
+  # Setup images
+  if [[ "$screenshots_in_upload" == true ]]; then
+    screenshot_1="${torrent_name}_ncup/screenshot_1.png"
+    screenshot_2="${torrent_name}_ncup/screenshot_2.png"
+    screenshot_3="${torrent_name}_ncup/screenshot_3.png"
   fi
 
   if (( ! noupload )); then
@@ -540,17 +540,13 @@ for x in "$@"; do
       curl "https://ncore.cc/torrents.php?action=addnews&id=$torrent_id&getunique=$unique_id" -b "$cookies" -s
     fi
   fi
-  # Drawing a separator after each torrent.
-  (( t++ ))
-  if (( t < $# )); then
-    print_separator
-  fi
   unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres \
   country runtime director cast seasons episodes nfo_urls screenshot_bb_code description porthu_description
 done
 
 # Deleting screenshots.
 if [[ "$screenshots_in_upload" == true ]] || [[ "$screenshots_in_description" == true ]]; then
+  print_separator
   printf 'Deleting screenshots.\n'
-  rm image*webp screenshot*
+  rm -rf *_ncup
 fi
