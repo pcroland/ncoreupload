@@ -4,7 +4,7 @@ LANG=C.UTF-8
 
 # image generator
 imagegen() {
-  printf '\rSaving screenshots: [0/00] 0%%'
+  printf '\rSaving screenshots: [0/12] 0%%'
   images=12
   seconds=$(ffprobe "$1" -v quiet -print_format json -show_format | jq -r '.format.duration')
   interval=$(bc <<< "scale=4; $seconds/($images+1)")
@@ -126,7 +126,7 @@ extract_nfo_urls() {
       if grep 'imdb.com\|tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' <<< "$line"; then
         echo "$line"
       else
-        curl -Ls -o /dev/null -w "%{url_effective}" "$line"
+        curl -Ls -o /dev/null -w "%{url_effective}\n" "$line"
       fi
     done <<< "$nfo_urls")
   fi
