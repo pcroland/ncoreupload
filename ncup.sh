@@ -479,9 +479,9 @@ for x in "$@"; do
 
   # Setup images
   if [[ "$screenshots_in_upload" == true ]]; then
-    screenshot_1="@${torrent_name}_ncup/screenshot_1.png"
-    screenshot_2="@${torrent_name}_ncup/screenshot_2.png"
-    screenshot_3="@${torrent_name}_ncup/screenshot_3.png"
+    screenshot_1='@'"${torrent_name}_ncup/screenshot_1.png"
+    screenshot_2='@'"${torrent_name}_ncup/screenshot_2.png"
+    screenshot_3='@'"${torrent_name}_ncup/screenshot_3.png"
   fi
 
   if (( ! noupload )); then
