@@ -337,7 +337,7 @@ for x in "$@"; do
     imagegen "$file"
     if [[ "$screenshots_in_upload" == true ]]; then
       for i in {1..3}; do
-        ffmpeg -y -v quiet -i "${torrent_name}_ncup/screenshot_${i}.webp" "${torrent_name}_ncup/screenshot_${i}.png"
+        ffmpeg -y -v quiet -i "${torrent_name}_ncup/screenshot_${i}.webp" -qmin 1 -q:v 1 "${torrent_name}_ncup/screenshot_${i}.jpg"
       done
     fi
     if [[ "$screenshots_in_description" == true ]]; then
@@ -479,9 +479,9 @@ for x in "$@"; do
 
   # Setup images
   if [[ "$screenshots_in_upload" == true ]]; then
-    screenshot_1="@${torrent_name}_ncup/screenshot_1.png"
-    screenshot_2="@${torrent_name}_ncup/screenshot_2.png"
-    screenshot_3="@${torrent_name}_ncup/screenshot_3.png"
+    screenshot_1="@${torrent_name}_ncup/screenshot_1.jpg"
+    screenshot_2="@${torrent_name}_ncup/screenshot_2.jpg"
+    screenshot_3="@${torrent_name}_ncup/screenshot_3.jpg"
   fi
 
   if (( ! noupload )); then
