@@ -337,7 +337,7 @@ for x in "$@"; do
     imagegen "$file"
     if [[ "$screenshots_in_upload" == true ]]; then
       for i in {1..3}; do
-        ffmpeg -y -v quiet -i "${torrent_name}_ncup/screenshot_${i}.webp" "${torrent_name}_ncup/screenshot_${z}.png"
+        ffmpeg -y -v quiet -i "${torrent_name}_ncup/screenshot_${i}.webp" "${torrent_name}_ncup/screenshot_${i}.png"
       done
     fi
     if [[ "$screenshots_in_description" == true ]]; then
@@ -478,11 +478,11 @@ for x in "$@"; do
   fi
 
   # Setup images
-#  if [[ "$screenshots_in_upload" == true ]]; then
-#    screenshot_1='@'"${torrent_name}_ncup/screenshot_1.png"
-#    screenshot_2='@'"${torrent_name}_ncup/screenshot_2.png"
-#    screenshot_3='@'"${torrent_name}_ncup/screenshot_3.png"
-#  fi
+  if [[ "$screenshots_in_upload" == true ]]; then
+    screenshot_1="@${torrent_name}_ncup/screenshot_1.png"
+    screenshot_2="@${torrent_name}_ncup/screenshot_2.png"
+    screenshot_3="@${torrent_name}_ncup/screenshot_3.png"
+  fi
 
   if (( ! noupload )); then
     printf "Uploading. "
@@ -541,8 +541,8 @@ for x in "$@"; do
 done
 
 # Deleting screenshots.
-#if [[ "$screenshots_in_upload" == true ]] || [[ "$screenshots_in_description" == true ]]; then
-#  print_separator
-#  printf 'Deleting screenshots.\n'
-#  rm -rf -- *_ncup
-#fi
+if [[ "$screenshots_in_upload" == true ]] || [[ "$screenshots_in_description" == true ]]; then
+  print_separator
+  printf 'Deleting screenshots.\n'
+  rm -rf -- *_ncup
+fi
