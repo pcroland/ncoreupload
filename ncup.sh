@@ -141,6 +141,12 @@ scrape_port() {
   if [[ -z "$port_link" ]]; then
     printf '\e[91m%s\e[0m\n' "ERROR: port.hu scraping failed."
     read -r -p 'port.hu link: ' port_link
+    return 1
+  fi
+  port_link_content=$(curl -s "$port_link")
+  if [[ ! "$port_link_content" == *"$imdb"* ]]; then
+    printf '\e[91m%s\e[0m\n' "ERROR: port.hu scraping failed."
+    read -r -p 'port.hu link: ' port_link
   fi
 }
 
