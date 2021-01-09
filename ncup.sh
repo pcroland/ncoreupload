@@ -322,14 +322,14 @@ for x in "$@"; do
       if [[ "$torrent_program" == pmktorrent ]]; then
         animation &
         pid=$!
-        pmktorrent -q -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x"
+        pmktorrent -q -a http://t.ncore.sh:2710/announce -l 24 -o "$torrent_file" "$x"
         kill -PIPE "$pid"
       elif [[ "$torrent_program" == mktorrent ]]; then
-        mktorrent -a http://bithumen.be:11337/announce -l 24 -o "$torrent_file" "$x" | while read -r; do printf '\r\e[K%s' "$REPLY"; done
+        mktorrent -a http://t.ncore.sh:2710/announce -l 24 -o "$torrent_file" "$x" | while read -r; do printf '\r\e[K%s' "$REPLY"; done
       elif [[ "$torrent_program" == mktor ]]; then
         animation &
         pid=$!
-        mktor "$x" http://bithumen.be:11337/announce --chunk-min 16M --chunk-max 16M -o "$torrent_file" &> /dev/null
+        mktor "$x" http://t.ncore.sh:2710/announce --chunk-min 16M --chunk-max 16M -o "$torrent_file" &> /dev/null
         kill -PIPE "$pid"
       else
         printf '\e[91m%s\e[0m\n' "ERROR: Unsupported torrent program." >&2
