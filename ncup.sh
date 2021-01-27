@@ -106,10 +106,10 @@ login() {
   read -r -s -p 'password...: ' password
   printf '\n'
   read -r -p '2factor....: ' twofactor
-  curl 'https://ncore.cc/login.php?2fa' -c "$cookies" -s -d "submitted=1" \
+  curl 'https://ncore.pro/login.php?2fa' -c "$cookies" -s -d "submitted=1" \
   --data-urlencode "nev=$username" --data-urlencode "pass=$password" \
   --data-urlencode "2factor=$twofactor" -d "ne_leptessen_ki=1"
-  if [[ $(curl -s -I -b "$cookies" 'https://ncore.cc/' -o /dev/null -w '%{http_code}') == 200 ]]; then
+  if [[ $(curl -s -I -b "$cookies" 'https://ncore.pro/' -o /dev/null -w '%{http_code}') == 200 ]]; then
     printf '\e[92m%s\e[0m\n' "Successful login."
   else
     printf '\e[91m%s\e[0m\n' "ERROR: Login failed, wrong password/2FA or maybe a captcha appeared." >&2
@@ -271,7 +271,7 @@ fi
 # if it doesn't exist, show login prompt.
 # If login fails exit.
 if [[ -f "$cookies" ]]; then
-  if [[ $(curl -s -I -b "$cookies" 'https://ncore.cc/' -o /dev/null -w '%{http_code}') == 200 ]]; then
+  if [[ $(curl -s -I -b "$cookies" 'https://ncore.pro/' -o /dev/null -w '%{http_code}') == 200 ]]; then
     printf '\e[92m%s\e[0m\n' "Cookies OK."
   else
     printf '\e[91m%s\e[0m\n' "ERROR: cookies.txt does not work, login: "
@@ -285,7 +285,7 @@ fi
 
 # Grabbing the getUnique id.
 printf "Grabbing getUnique id: "
-unique_id=$(curl https://ncore.cc -b "$cookies" -s | grep -o -P '(?<=exit.php\?q=).*(?=" id="menu_11")')
+unique_id=$(curl https://ncore.pro -b "$cookies" -s | grep -o -P '(?<=exit.php\?q=).*(?=" id="menu_11")')
 printf '\e[93m%.15s...\e[0m\n' "$unique_id"
 print_separator
 
@@ -416,7 +416,7 @@ for x in "$@"; do
 
   # Grabbing infobar page.
   printf '%s\n' "Saving infobar."
-  ajax_infobar=$(curl "https://ncore.cc/ajax.php?action=imdb_movie&imdb_movie=${imdb//t}" -b "$cookies" -s)
+  ajax_infobar=$(curl "https://ncore.pro/ajax.php?action=imdb_movie&imdb_movie=${imdb//t}" -b "$cookies" -s)
 
   # Updating infobar values with ajax_parser()
   # if they are not set manually in infobar.txt
@@ -493,7 +493,7 @@ for x in "$@"; do
   if (( ! noupload )); then
     printf "Uploading. "
     # shellcheck disable=SC2128
-    torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.cc/upload.php" \
+    torrent_link=$(curl -Ls -o /dev/null -w "%{url_effective}" "https://ncore.pro/upload.php" \
     -b "$cookies" \
     -F getUnique="$unique_id" \
     -F eredeti=igen \
@@ -530,16 +530,16 @@ for x in "$@"; do
     # Downloading torrent from nCore.
     # First curl gets the torrent id with passkey,
     # the second one downloads the torrent.
-    printf 'Downloading: \e[93mhttps://ncore.cc/t/%s\e[0m\n' "${torrent_link//[!0-9]/}"
+    printf 'Downloading: \e[93mhttps://ncore.pro/t/%s\e[0m\n' "${torrent_link//[!0-9]/}"
     torrent_page=$(curl "$torrent_link" -b "$cookies" -s)
     id_with_passkey=$(grep -m 1 -o -P '(?<=action\=download&id\=).*(?=\">)' <<< "$torrent_page")
-    curl "https://ncore.cc/torrents.php?action=download&id=$id_with_passkey" -b "$cookies" -s -o "${torrent_name}_nc.torrent"
+    curl "https://ncore.pro/torrents.php?action=download&id=$id_with_passkey" -b "$cookies" -s -o "${torrent_name}_nc.torrent"
 
     # Posting to feed.
     if [[ "$post_to_feed" == true ]]; then
       printf "Posting to feed.\n"
       torrent_id="${id_with_passkey%%&*}"
-      curl "https://ncore.cc/torrents.php?action=addnews&id=$torrent_id&getunique=$unique_id" -b "$cookies" -s
+      curl "https://ncore.pro/torrents.php?action=addnews&id=$torrent_id&getunique=$unique_id" -b "$cookies" -s
     fi
   fi
   unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres \
