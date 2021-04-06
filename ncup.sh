@@ -157,6 +157,7 @@ Usage:
 Options:
   -h      Prints help.
   -n      Skip uploading.
+  -f      Force category to be Hungarian.
   -u      Update script.
   -c      Config editor.
   -i      Infobar editor.
@@ -216,6 +217,7 @@ while getopts ':hnucide' OPTION; do
   case "$OPTION" in
     h) echo "$help"; exit 0;;
     n) noupload=1;;
+    f) forcehun=1;;
     u) updater; exit 0;;
     c) config_checker
        (( config_created )) && sleep 2
@@ -377,7 +379,7 @@ for x in "$@"; do
   if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
     type+=ser
   fi
-  if grep -qEi "\.hun(\.|\-)" <<< "$torrent_name"; then
+  if grep -qEi "\.hun(\.|\-)" <<< "$torrent_name" || (( forcehun )); then
     type+=_hun
   fi
 
