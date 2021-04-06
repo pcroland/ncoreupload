@@ -213,7 +213,7 @@ config=~/.ncup/ncup.conf
 infobar=~/.ncup/infobar.txt
 script=~/.local/bin/ncup
 
-while getopts ':hnucide' OPTION; do
+while getopts ':hnfucide' OPTION; do
   case "$OPTION" in
     h) echo "$help"; exit 0;;
     n) noupload=1;;
