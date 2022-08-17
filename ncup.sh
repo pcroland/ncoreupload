@@ -337,7 +337,7 @@ for x in "$@"; do
         printf '\e[91m%s\e[0m\n' "ERROR: Unsupported torrent program." >&2
         exit 1
       fi
-	  printf '\n'
+    printf '\n'
     fi
   fi
   # Generating screenshots.
