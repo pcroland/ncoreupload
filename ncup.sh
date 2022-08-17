@@ -469,8 +469,8 @@ for x in "$@"; do
   # Setup description.
   description=''
   # shellcheck disable=SC2071
-  if [[ ${#torrent_name} > 90 ]]; then
-    description="[center][highlight][size=10pt]${torrent_name}[/size][/highlight]"$'\n\n'
+  if [[ ${#torrent_name} > 80 ]]; then
+    description="[center][highlight][size=10pt]${torrent_name}[/size][/highlight][/center]"$'\n\n'
   fi
   if [[ "$port_description" == true ]] && [[ "$screenshots_in_description" == true ]]; then
     screenshot_bb_code=$(cat "$torrent_name"_ncup/bbcode.txt)
