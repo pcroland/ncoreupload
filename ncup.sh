@@ -152,7 +152,7 @@ scrape_port() {
 
 help=$(cat <<'EOF'
 Usage:
-  ncup [input(s)]
+  ncup [input(s)] [-r REQUEST_ID]
 
 Options:
   -h      Prints help.
