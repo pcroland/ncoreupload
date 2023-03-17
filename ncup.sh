@@ -156,6 +156,7 @@ Usage:
 
 Options:
   -h      Prints help.
+  -r      Request ID to complete a request.
   -n      Skip uploading.
   -f      Force category to be Hungarian.
   -u      Update script.
@@ -212,10 +213,10 @@ cookies=~/.ncup/cookies.txt
 config=~/.ncup/ncup.conf
 infobar=~/.ncup/infobar.txt
 script=~/.local/bin/ncup
-
-while getopts ':hnfucide' OPTION; do
+while getopts ':hr:nfucide' OPTION; do
   case "$OPTION" in
     h) echo "$help"; exit 0;;
+    r) request_id=$OPTARG;;
     n) noupload=1;;
     f) forcehun=1;;
     u) updater; exit 0;;
@@ -469,8 +470,8 @@ for x in "$@"; do
   # Setup description.
   description=''
   # shellcheck disable=SC2071
-  if [[ ${#torrent_name} > 80 ]]; then
-    description="[center][highlight][size=10pt]${torrent_name}[/size][/highlight][/center]"$'\n\n'
+  if [[ ${#torrent_name} > 83 ]]; then
+    description+="[center][highlight][size=10pt]${torrent_name}[/size][/highlight][/center]"$'\n\n'
   fi
   if [[ "$port_description" == true ]] && [[ "$screenshots_in_description" == true ]]; then
     screenshot_bb_code=$(cat "$torrent_name"_ncup/bbcode.txt)
@@ -482,7 +483,7 @@ for x in "$@"; do
   elif [[ "$port_description" == true ]]; then
     description+="$porthu_description"
   elif [[ "$screenshots_in_description" == true ]]; then
-    description=$(cat "$torrent_name"_ncup/bbcode.txt)
+    description+=$(cat "$torrent_name"_ncup/bbcode.txt)
   fi
 
   # Setup images
@@ -490,6 +491,12 @@ for x in "$@"; do
     screenshot_1="@${torrent_name}_ncup/screenshot_1.jpg"
     screenshot_2="@${torrent_name}_ncup/screenshot_2.jpg"
     screenshot_3="@${torrent_name}_ncup/screenshot_3.jpg"
+  fi
+
+  if [ -z "$request_id" ]; then
+    req="keresre=nem"
+  else
+    req="keresre=igen -F keres_kodja=$request_id"
   fi
 
   if (( ! noupload )); then
@@ -523,7 +530,7 @@ for x in "$@"; do
     -F szereplok="$cast" \
     -F szezon="$seasons" \
     -F epizod_szamok="$episodes" \
-    -F keresre=nem \
+    -F "$req" \
     -F anonymous="$anonymous" \
     -F elrejt=nem \
     -F mindent_tud1=szabalyzat \
@@ -545,12 +552,12 @@ for x in "$@"; do
     fi
   fi
   unset imdb movie_database hun_title eng_title for_title release_date infobar_picture infobar_rank infobar_genres \
-  country runtime director cast seasons episodes nfo_urls screenshot_bb_code description porthu_description
+  country runtime director cast seasons episodes nfo_urls screenshot_bb_code description porthu_description request_id
 done
 
 # Deleting screenshots.
 if [[ "$screenshots_in_upload" == true ]] || [[ "$screenshots_in_description" == true ]]; then
   print_separator
-  printf 'Deleting screenshots.\n'
+  printf '\nDeleting screenshots.\n'
   rm -rf -- *_ncup
 fi
