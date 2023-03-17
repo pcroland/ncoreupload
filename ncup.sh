@@ -388,7 +388,7 @@ for x in "$@"; do
   if [[ -z "$imdb" ]]; then
     # shellcheck disable=SC2128
     extract_nfo_urls "$nfo_file"
-    imdb=$(grep -Poa '(tt[[:digit:]]*)(?=/)' <<< "$nfo_urls" | head -n 1)
+    imdb=$(grep -Poa '(tt[[:digit:]]*)(?=/|$)' <<< "$nfo_urls" | head -n 1)
   fi
   if [[ -z "$imdb" ]]; then
     printf "Scraping imdb.com for id: "
