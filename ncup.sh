@@ -376,7 +376,7 @@ for x in "$@"; do
   if (( resolution >= 720 )); then
     type=hd
   fi
-  if grep -qE "(S|E)[0-9][0-9]" <<< "$torrent_name"; then
+  if grep -qE "\.(S|E)[0-9][0-9]" <<< "$torrent_name"; then
     type+=ser
   fi
   if grep -qEi "\.hun(\.|\-)" <<< "$torrent_name" || (( forcehun )); then
