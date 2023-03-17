@@ -16,7 +16,7 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 * `curl`
 * `jq`
 * `ffmpeg`, `ffprobe` (ha a configban a `screenshots_in_upload`/`screenshots_in_description='true'` (default))
-* `pmktorrent`/`mktorrent`/`mktor` (configolható (`pmktorrent` a default))
+* `pmktorrent`/`mktorrent`/`mktor`/`torf` (configolható (`pmktorrent` a default))
 * `xmlstarlet` (ha a configban `port_description='true'` (default))
 * `mediainfo` (ha a feltölteni kívánt mappában nincs NFO fájl, a script létrehoz egyet)
 ## Telepítés
@@ -27,7 +27,7 @@ ha nem talál semmit, IMDb-ről id-vel lekéri a címet, majd port.hu-n ezzel a 
 * `ncup -c` paranccsal tudjuk szerkeszteni a config fájlunkat.
 ## Használat
 ```sh
-ncup [input(s)]
+ncup [input(s)] [-r REQUEST_ID]
 ```
 Példák:
 
@@ -36,9 +36,13 @@ Példák:
 
 `ncup A.Dogs.Journey*prldm`
 (összes mappa feltöltése, aminek az eleje `A.Dogs.Journey` és a vége `prldm`)
+
+`ncup -r 12345 A.Dogs.Journey.2019.BDRip.x264.HuN-prldm`
+(feltöltés kérés azonosítóval)
 ## Kapcsolók
 ```sh
 -h      Prints help.
+-r      Request ID to complete a request
 -n      Skip uploading.
 -u      Update script.
 -c      Config editor.
