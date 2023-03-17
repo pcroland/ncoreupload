@@ -122,7 +122,7 @@ extract_nfo_urls() {
   nfo_urls=$(grep -Eo "(http|https)://[a-zA-Z0-9./?=_%:-]*" "$1")
   if [[ "$extract_urls" == true ]]; then
     nfo_urls=$(while IFS= read -r line; do
-      if grep 'imdb.com\|tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' <<< "$line"; then
+      if grep 'imdb.com\|tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|myanimelist.net\|netflix.com\|mafab.hu' <<< "$line"; then
         echo "$line"
       else
         curl -Ls -o /dev/null -w "%{url_effective}\n" "$line"
@@ -409,7 +409,7 @@ for x in "$@"; do
   if [[ -z "$movie_database" ]]; then
     # shellcheck disable=SC2128
     [[ -z "$nfo_urls" ]] && extract_nfo_urls "$nfo_file"
-    movie_database=$(grep 'tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|mafab.hu' <<< "$nfo_urls" | head -1)
+    movie_database=$(grep 'tvmaze.com\|thetvdb.com\|port.hu\|rottentomatoes.com\|myanimelist.net\|netflix.com\|mafab.hu' <<< "$nfo_urls" | head -1)
   fi
   if [[ -z "$movie_database" ]]; then
     scrape_port
