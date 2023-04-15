@@ -335,7 +335,15 @@ for x in "$@"; do
         mktor "$x" http://t.ncore.sh:2710/announce --chunk-min 16M --chunk-max 16M -o "$torrent_file" &> /dev/null
         kill -PIPE "$pid"
       elif [[ "$torrent_program" == torf ]]; then
-        torf "$x" -p -A -o "$torrent_file"
+        animation &
+        pid=$!
+        torf "$x" -p -A -o "$torrent_file" -er ".*\.(ffindex|jpg|png|torrent|txt)$" &> /dev/null
+        kill -PIPE "$pid"
+      elif [[ "$torrent_program" == torrenttools ]]; then
+        animation &
+        pid=$!
+        torrenttools create "$x" --exclude ".*\.(ffindex|jpg|png|torrent|txt)$" -o "$torrent_file" &> /dev/null
+        kill -PIPE "$pid"
       else
         printf '\e[91m%s\e[0m\n' "ERROR: Unsupported torrent program." >&2
         exit 1
